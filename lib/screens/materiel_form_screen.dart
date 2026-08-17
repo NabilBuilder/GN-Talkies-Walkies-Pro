@@ -4,6 +4,8 @@ import 'dart:io';
 import '../models/materiel.dart';
 import '../models/site.dart';
 import '../models/marche.dart';
+import '../repositories/firestore_materiel_repository.dart';
+import '../repositories/i_materiel_repository.dart';
 import '../services/firestore_service.dart';
 
 class MaterielFormScreen extends StatefulWidget {
@@ -18,6 +20,7 @@ class MaterielFormScreen extends StatefulWidget {
 
 class _MaterielFormScreenState extends State<MaterielFormScreen> {
   final _formKey = GlobalKey<FormState>();
+  final IMaterielRepository _materielRepository = FirestoreMaterielRepository();
   final _firestoreService = FirestoreService();
   final _imagePicker = ImagePicker();
 
@@ -118,7 +121,7 @@ class _MaterielFormScreenState extends State<MaterielFormScreen> {
           marche: _selectedMarche ?? '',
           derniereMiseAJour: now,
         );
-        await _firestoreService.mettreAJourMateriel(updated);
+        await _materielRepository.updateMateriel(updated);
       } else {
         final newId = DateTime.now().millisecondsSinceEpoch.toString();
         final materiel = Materiel(
@@ -135,7 +138,7 @@ class _MaterielFormScreenState extends State<MaterielFormScreen> {
           derniereMiseAJour: now,
           enregistrePar: '',
         );
-        await _firestoreService.creerMateriel(materiel);
+        await _materielRepository.addMateriel(materiel);
       }
 
       if (mounted) {

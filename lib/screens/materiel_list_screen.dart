@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../models/materiel.dart';
-import '../services/firestore_service.dart';
+import '../repositories/firestore_materiel_repository.dart';
+import '../repositories/i_materiel_repository.dart';
 import 'materiel_form_screen.dart';
 import 'transfert_screen.dart';
 
@@ -12,7 +13,7 @@ class MaterielListScreen extends StatefulWidget {
 }
 
 class _MaterielListScreenState extends State<MaterielListScreen> {
-  final _firestoreService = FirestoreService();
+  final IMaterielRepository _materielRepository = FirestoreMaterielRepository();
   final _searchController = TextEditingController();
   String _searchQuery = '';
   String? _filterEtat;
@@ -117,7 +118,7 @@ class _MaterielListScreenState extends State<MaterielListScreen> {
           ),
           Expanded(
             child: StreamBuilder<List<Materiel>>(
-              stream: _firestoreService.getMateriels(),
+              stream: _materielRepository.getMateriels(),
               builder: (context, snapshot) {
                 if (snapshot.hasError) {
                   return Center(child: Text('Erreur: ${snapshot.error}'));
