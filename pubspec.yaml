@@ -48,6 +48,10 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
+  # Used only in widget tests to mock Firebase platform channels.
+  # Already present in the dependency graph as transitive dependencies.
+  firebase_core_platform_interface: ^8.1.0
+  cloud_firestore_platform_interface: ^8.0.6
 
   # The "flutter_lints" package below contains a set of recommended lints to
   # encourage good coding practices. The lint set provided by the package is

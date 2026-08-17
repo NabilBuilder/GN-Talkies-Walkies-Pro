@@ -162,22 +162,32 @@ class _DashboardScreenState extends State<DashboardScreen> {
             const SizedBox(height: 16),
             SizedBox(
               height: 200,
-              child: PieChart(
-                PieChartData(
-                  pieTouchData: PieTouchData(
-                    touchCallback: (event, response) {
-                      setState(() {});
-                    },
+              child: Stack(
+                alignment: Alignment.center,
+                children: [
+                  PieChart(
+                    PieChartData(
+                      pieTouchData: PieTouchData(
+                        touchCallback: (event, response) {
+                          setState(() {});
+                        },
+                      ),
+                      borderData: FlBorderData(show: false),
+                      sectionsSpace: 2,
+                      centerSpaceRadius: 40,
+                      sections: _etatSections(actif, panne, perdu),
+                    ),
                   ),
-                  borderData: FlBorderData(show: false),
-                  sectionsSpace: 2,
-                  centerText: '$actif',
-                  centerTextStyle: const TextStyle(
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
+                  IgnorePointer(
+                    child: Text(
+                      '$actif',
+                      style: const TextStyle(
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
                   ),
-                  sections: _etatSections(actif, panne, perdu),
-                ),
+                ],
               ),
             ),
             const SizedBox(height: 12),
@@ -282,9 +292,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
     final maxCount = sortedEntries.first.value > 0 ? sortedEntries.first.value : 1;
     final barWidth = 18.0;
-    final itemCount = sortedEntries.length;
     final chartHeight = 180.0;
-    final barSpacing = 24.0;
 
     return Card(
       elevation: 2,
@@ -302,19 +310,30 @@ class _DashboardScreenState extends State<DashboardScreen> {
               height: chartHeight,
               child: BarChart(
                 BarChartData(
-                  alignment: BarChartGroupData.center,
+                  alignment: BarChartAlignment.center,
                   barTouchData: BarTouchData(
                     touchCallback: (event, response) {
                       setState(() {});
                     },
+                    touchTooltipData: BarTouchTooltipData(
+                      getTooltipItem: (group, groupIndex, rod, rodIndex) {
+                        final label = sortedEntries[group.x].key;
+                        return BarTooltipItem(
+                          '$label\n${rod.toY.toInt()}',
+                          const TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        );
+                      },
+                    ),
                   ),
                   borderData: FlBorderData(show: false),
                   gridData: const FlGridData(show: false),
                   titlesData: FlTitlesData(
-                    show: true,
                     bottomTitles: AxisTitles(
                       sideTitles: SideTitles(
-                        show: true,
+                        showTitles: true,
                         getTitlesWidget: (value, meta) {
                           final index = value.toInt();
                           if (index < 0 || index >= sortedEntries.length) {
@@ -339,7 +358,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     ),
                     leftTitles: AxisTitles(
                       sideTitles: SideTitles(
-                        show: true,
+                        showTitles: true,
                         getTitlesWidget: (value, meta) {
                           return Text(
                             value.toInt().toString(),
@@ -348,8 +367,12 @@ class _DashboardScreenState extends State<DashboardScreen> {
                         },
                       ),
                     ),
-                    topTitle: AxisTitles(sideTitles: SideTitles(show: false)),
-                    rightTitle: AxisTitles(sideTitles: SideTitles(show: false)),
+                    topTitles: AxisTitles(
+                      sideTitles: SideTitles(showTitles: false),
+                    ),
+                    rightTitles: AxisTitles(
+                      sideTitles: SideTitles(showTitles: false),
+                    ),
                   ),
                   barGroups: List.generate(
                     sortedEntries.length,
@@ -361,10 +384,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
                           width: barWidth,
                           borderRadius: BorderRadius.circular(4),
                           color: _siteColor(i),
-                          overlayChartGroupData: BarOverlayGroupData(
-                            showRubberbandImplies: true,
-                            showTooltipIndicators: [0],
-                          ),
                         ),
                       ],
                     ),
