@@ -1,10 +1,14 @@
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import '../models/utilisateur.dart';
+import '../repositories/firestore_utilisateur_repository.dart';
+import '../repositories/i_utilisateur_repository.dart';
 
 class AuthService {
+  AuthService({IUtilisateurRepository? repository})
+      : _repository = repository ?? FirestoreUtilisateurRepository();
+
   final FirebaseAuth _auth = FirebaseAuth.instance;
-  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  final IUtilisateurRepository _repository;
 
   User? get currentUser => _auth.currentUser;
   Stream<User?> get authStateChanges => _auth.authStateChanges();
@@ -17,14 +21,8 @@ class AuthService {
       );
 
       if (credential.user != null) {
-        final doc = await _firestore
-            .collection('Utilisateurs')
-            .doc(credential.user!.uid)
-            .get();
-
-        if (doc.exists) {
-          return Utilisateur.fromFirestore(doc);
-        }
+        final utilisateur = await _repository.getById(credential.user!.uid);
+        return utilisateur;
       }
       return null;
     } on FirebaseAuthException catch (e) {
@@ -57,10 +55,7 @@ class AuthService {
           dateCreation: DateTime.now(),
         );
 
-        await _firestore
-            .collection('Utilisateurs')
-            .doc(credential.user!.uid)
-            .set(utilisateur.toMap());
+        await _repository.create(utilisateur);
 
         return utilisateur;
       }
@@ -86,15 +81,7 @@ class AuthService {
   Future<Utilisateur?> getUtilisateurActuel() async {
     if (currentUser == null) return null;
 
-    final doc = await _firestore
-        .collection('Utilisateurs')
-        .doc(currentUser!.uid)
-        .get();
-
-    if (doc.exists) {
-      return Utilisateur.fromFirestore(doc);
-    }
-    return null;
+    return _repository.getById(currentUser!.uid);
   }
 
   String _getErrorMessage(String code) {
