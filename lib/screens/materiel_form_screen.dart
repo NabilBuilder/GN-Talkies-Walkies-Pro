@@ -4,9 +4,12 @@ import 'dart:io';
 import '../models/materiel.dart';
 import '../models/site.dart';
 import '../models/marche.dart';
+import '../repositories/firestore_marche_repository.dart';
 import '../repositories/firestore_materiel_repository.dart';
+import '../repositories/firestore_site_repository.dart';
+import '../repositories/i_marche_repository.dart';
 import '../repositories/i_materiel_repository.dart';
-import '../services/firestore_service.dart';
+import '../repositories/i_site_repository.dart';
 
 class MaterielFormScreen extends StatefulWidget {
   final Materiel? materiel;
@@ -21,7 +24,8 @@ class MaterielFormScreen extends StatefulWidget {
 class _MaterielFormScreenState extends State<MaterielFormScreen> {
   final _formKey = GlobalKey<FormState>();
   final IMaterielRepository _materielRepository = FirestoreMaterielRepository();
-  final _firestoreService = FirestoreService();
+  final ISiteRepository _siteRepository = FirestoreSiteRepository();
+  final IMarcheRepository _marcheRepository = FirestoreMarcheRepository();
   final _imagePicker = ImagePicker();
 
   late TextEditingController _codeQRController;
@@ -69,12 +73,12 @@ class _MaterielFormScreenState extends State<MaterielFormScreen> {
   }
 
   Future<void> _loadSites() async {
-    final sites = await _firestoreService.getSitesList();
+    final sites = await _siteRepository.getSitesList();
     setState(() => _sites = sites);
   }
 
   Future<void> _loadMarches() async {
-    final marches = await _firestoreService.getMarchesList();
+    final marches = await _marcheRepository.getMarchesList();
     setState(() => _marches = marches);
   }
 

@@ -3,6 +3,10 @@ import 'package:fl_chart/fl_chart.dart';
 import '../models/materiel.dart';
 import '../models/site.dart';
 import '../models/marche.dart';
+import '../repositories/firestore_marche_repository.dart';
+import '../repositories/firestore_site_repository.dart';
+import '../repositories/i_marche_repository.dart';
+import '../repositories/i_site_repository.dart';
 import '../services/firestore_service.dart';
 
 class DashboardScreen extends StatefulWidget {
@@ -13,6 +17,8 @@ class DashboardScreen extends StatefulWidget {
 }
 
 class _DashboardScreenState extends State<DashboardScreen> {
+  final ISiteRepository _siteRepository = FirestoreSiteRepository();
+  final IMarcheRepository _marcheRepository = FirestoreMarcheRepository();
   final _firestoreService = FirestoreService();
 
   @override
@@ -28,12 +34,12 @@ class _DashboardScreenState extends State<DashboardScreen> {
           final materiels = materielSnapshot.data!;
 
           return StreamBuilder<List<Site>>(
-            stream: _firestoreService.getSites(),
+            stream: _siteRepository.getSites(),
             builder: (context, siteSnapshot) {
               final sites = siteSnapshot.data ?? [];
 
               return StreamBuilder<List<Marche>>(
-                stream: _firestoreService.getMarches(),
+                stream: _marcheRepository.getMarches(),
                 builder: (context, marcheSnapshot) {
                   final marches = marcheSnapshot.data ?? [];
 
