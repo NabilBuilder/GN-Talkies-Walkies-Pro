@@ -1,0 +1,17 @@
+# ====================================================================
+# Android release signing configuration — SAFE TEMPLATE
+# ====================================================================
+# Copy this file to `key.properties` in the project root and fill in
+# your REAL values. `key.properties` and `release_keystore.jks` are
+# listed in .gitignore and MUST NEVER be committed or pushed to Git.
+#
+# Generate a NEW keystore (never reuse one that was exposed publicly):
+#   keytool -genkey -v -keystore release_keystore.jks \
+#           -keyalg RSA -keysize 2048 -validity 10000 -alias upload
+#
+# Referenced by android/app/build.gradle.kts via rootProject.file("../key.properties")
+
+storePassword=CHANGE_ME_REAL_PASSWORD
+keyPassword=CHANGE_ME_REAL_PASSWORD
+keyAlias=upload
+storeFile=release_keystore.jks
