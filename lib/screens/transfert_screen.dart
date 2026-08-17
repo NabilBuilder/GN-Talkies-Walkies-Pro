@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import '../models/materiel.dart';
 import '../models/site.dart';
-import '../services/firestore_service.dart';
+import '../repositories/firestore_historique_transfert_repository.dart';
+import '../repositories/firestore_site_repository.dart';
+import '../repositories/i_historique_transfert_repository.dart';
+import '../repositories/i_site_repository.dart';
 
 class TransfertScreen extends StatefulWidget {
   final Materiel materiel;
@@ -15,7 +18,9 @@ class TransfertScreen extends StatefulWidget {
 class _TransfertScreenState extends State<TransfertScreen> {
   final _formKey = GlobalKey<FormState>();
   final _motifController = TextEditingController();
-  final _firestoreService = FirestoreService();
+  final IHistoriqueTransfertRepository _transfertRepository =
+      FirestoreHistoriqueTransfertRepository();
+  final ISiteRepository _siteRepository = FirestoreSiteRepository();
   String? _selectedDestination;
   List<Site> _sites = [];
   bool _isLoading = false;
@@ -27,7 +32,7 @@ class _TransfertScreenState extends State<TransfertScreen> {
   }
 
   Future<void> _loadSites() async {
-    final sites = await _firestoreService.getSitesList();
+    final sites = await _siteRepository.getSitesList();
     setState(() {
       _sites = sites.where((s) => s.nom != widget.materiel.siteActuel).toList();
     });
@@ -45,8 +50,11 @@ class _TransfertScreenState extends State<TransfertScreen> {
     setState(() => _isLoading = true);
 
     try {
-      await _firestoreService.effectuerTransfert(
-        materiel: widget.materiel,
+      await _transfertRepository.executeTransfer(
+        materielId: widget.materiel.id,
+        materielDesignation: widget.materiel.designation,
+        codeQR: widget.materiel.codeQR,
+        siteOrigine: widget.materiel.siteActuel,
         siteDestination: _selectedDestination!,
         transferePar: '',
         motif: _motifController.text.trim(),
