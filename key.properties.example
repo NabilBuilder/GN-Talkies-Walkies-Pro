@@ -11,7 +11,11 @@
 #
 # Referenced by android/app/build.gradle.kts via rootProject.file("../key.properties")
 
+# JDK 21 creates PKCS12 keystores where the key password equals the store
+# password (-keypass is ignored), so keep keyPassword == storePassword.
 storePassword=CHANGE_ME_REAL_PASSWORD
 keyPassword=CHANGE_ME_REAL_PASSWORD
 keyAlias=upload
-storeFile=release_keystore.jks
+# Path is relative to android/app/ (the app module): two levels up is the
+# project root where the keystore lives.
+storeFile=../../release_keystore.jks
