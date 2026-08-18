@@ -4,9 +4,10 @@ import '../models/materiel.dart';
 import '../models/site.dart';
 import '../models/marche.dart';
 import '../di/service_locator.dart';
+import '../repositories/i_historique_transfert_repository.dart';
 import '../repositories/i_marche_repository.dart';
+import '../repositories/i_materiel_repository.dart';
 import '../repositories/i_site_repository.dart';
-import '../services/firestore_service.dart';
 
 class DashboardScreen extends StatefulWidget {
   const DashboardScreen({super.key});
@@ -20,13 +21,16 @@ class _DashboardScreenState extends State<DashboardScreen> {
   final ISiteRepository _siteRepository = getIt<ISiteRepository>();
   // DI: Injected via GetIt
   final IMarcheRepository _marcheRepository = getIt<IMarcheRepository>();
-  final _firestoreService = FirestoreService();
+  // DI: Injected via GetIt
+  final IMaterielRepository _materielRepository = getIt<IMaterielRepository>();
+  // DI: Injected via GetIt
+  final IHistoriqueTransfertRepository _transfertRepository = getIt<IHistoriqueTransfertRepository>();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: StreamBuilder<List<Materiel>>(
-        stream: _firestoreService.getMateriels(),
+        stream: _materielRepository.getMateriels(),
         builder: (context, materielSnapshot) {
           if (materielSnapshot.hasError || !materielSnapshot.hasData) {
             return const Center(child: CircularProgressIndicator());
@@ -433,7 +437,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
             ),
             const SizedBox(height: 12),
             StreamBuilder(
-              stream: _firestoreService.getHistoriqueTransferts(),
+              stream: _transfertRepository.getHistory(),
               builder: (context, snapshot) {
                 if (!snapshot.hasData || snapshot.data!.isEmpty) {
                   return const Padding(
