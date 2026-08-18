@@ -10,6 +10,8 @@ import '../repositories/i_marche_repository.dart';
 import '../repositories/i_materiel_repository.dart';
 import '../repositories/i_site_repository.dart';
 import '../repositories/i_utilisateur_repository.dart';
+import '../services/locale_service.dart';
+import '../services/theme_service.dart';
 
 /// Central service locator for dependency injection.
 ///
@@ -37,6 +39,12 @@ Future<void> setupServiceLocator() async {
     )
     ..registerLazySingleton<IUtilisateurRepository>(
       () => FirestoreUtilisateurRepository(),
+    )
+    ..registerLazySingleton<ILocaleService>(
+      () => LocaleService(),
+    )
+    ..registerLazySingleton<IThemeService>(
+      () => ThemeService(),
     );
 }
 

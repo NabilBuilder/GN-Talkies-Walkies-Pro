@@ -1,0 +1,12 @@
+{
+  "appTitle": "إدارة المواد",
+  "login": "تسجيل الدخول",
+  "createAccount": "إنشاء حساب",
+  "save": "حفظ",
+  "cancel": "إلغاء",
+  "delete": "حذف",
+  "search": "بحث",
+  "transfer": "تحويل",
+  "logout": "تسجيل خروج",
+  "error": "خطأ"
+}

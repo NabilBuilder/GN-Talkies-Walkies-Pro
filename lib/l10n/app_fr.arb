@@ -1,0 +1,12 @@
+{
+  "appTitle": "Gestion de Matériel",
+  "login": "SE CONNECTER",
+  "createAccount": "CRÉER UN COMPTE",
+  "save": "Enregistrer",
+  "cancel": "Annuler",
+  "delete": "Supprimer",
+  "search": "Rechercher",
+  "transfer": "Transférer",
+  "logout": "Déconnexion",
+  "error": "Erreur"
+}
