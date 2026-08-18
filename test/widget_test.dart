@@ -2,6 +2,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_core_platform_interface/test.dart' as fcp_test;
 import 'package:flutter_test/flutter_test.dart';
 
+import 'package:gestion_materiel/di/service_locator.dart';
 import 'package:gestion_materiel/main.dart';
 
 void main() {
@@ -20,6 +21,11 @@ void main() {
         projectId: '123',
       ),
     );
+    await setupServiceLocator();
+  });
+
+  tearDownAll(() async {
+    await resetServiceLocator();
   });
 
   testWidgets('App should render login screen', (WidgetTester tester) async {

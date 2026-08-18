@@ -1,8 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
 import 'di/service_locator.dart';
 import 'screens/login_screen.dart';
+import 'services/locale_service.dart';
+import 'services/theme_service.dart';
+import 'theme/app_theme.dart';
+
+// Création & Développement : Boukhoulkhal Nabil (2026)
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -18,13 +24,22 @@ class GestionMaterielApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final themeService = getIt<IThemeService>();
+    final localeService = getIt<ILocaleService>();
+
     return MaterialApp(
       title: 'Gestion Matériel',
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        colorSchemeSeed: const Color(0xFF1B5E20),
-        useMaterial3: true,
-      ),
+      theme: AppTheme.lightTheme,
+      darkTheme: AppTheme.darkTheme,
+      themeMode: themeService.getThemeMode(),
+      locale: localeService.getCurrentLocale(),
+      supportedLocales: localeService.getSupportedLocales(),
+      localizationsDelegates: const [
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
       home: const LoginScreen(),
     );
   }
