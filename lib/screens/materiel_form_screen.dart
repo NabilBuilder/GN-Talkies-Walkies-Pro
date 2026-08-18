@@ -4,9 +4,7 @@ import 'dart:io';
 import '../models/materiel.dart';
 import '../models/site.dart';
 import '../models/marche.dart';
-import '../repositories/firestore_marche_repository.dart';
-import '../repositories/firestore_materiel_repository.dart';
-import '../repositories/firestore_site_repository.dart';
+import '../di/service_locator.dart';
 import '../repositories/i_marche_repository.dart';
 import '../repositories/i_materiel_repository.dart';
 import '../repositories/i_site_repository.dart';
@@ -23,9 +21,12 @@ class MaterielFormScreen extends StatefulWidget {
 
 class _MaterielFormScreenState extends State<MaterielFormScreen> {
   final _formKey = GlobalKey<FormState>();
-  final IMaterielRepository _materielRepository = FirestoreMaterielRepository();
-  final ISiteRepository _siteRepository = FirestoreSiteRepository();
-  final IMarcheRepository _marcheRepository = FirestoreMarcheRepository();
+  // DI: Injected via GetIt
+  final IMaterielRepository _materielRepository = getIt<IMaterielRepository>();
+  // DI: Injected via GetIt
+  final ISiteRepository _siteRepository = getIt<ISiteRepository>();
+  // DI: Injected via GetIt
+  final IMarcheRepository _marcheRepository = getIt<IMarcheRepository>();
   final _imagePicker = ImagePicker();
 
   late TextEditingController _codeQRController;
