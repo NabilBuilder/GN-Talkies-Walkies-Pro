@@ -12,6 +12,7 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import 'package:gestion_materiel/di/service_locator.dart';
 import 'package:gestion_materiel/screens/dashboard_screen.dart';
 
 /// In-memory [cfsi.FirebaseFirestorePlatform] that serves fixed documents for
@@ -121,6 +122,11 @@ void main() {
     );
 
     cfsi.FirebaseFirestorePlatform.instance = _FakeFirestore(_sampleData());
+    await setupServiceLocator();
+  });
+
+  tearDownAll(() async {
+    await resetServiceLocator();
   });
 
   testWidgets('Dashboard renders with sample data', (WidgetTester tester) async {
