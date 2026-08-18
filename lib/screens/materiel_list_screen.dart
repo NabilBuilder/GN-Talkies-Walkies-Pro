@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import '../models/materiel.dart';
-import '../repositories/firestore_materiel_repository.dart';
+import '../di/service_locator.dart';
 import '../repositories/i_materiel_repository.dart';
 import 'materiel_form_screen.dart';
 import 'transfert_screen.dart';
@@ -13,7 +13,8 @@ class MaterielListScreen extends StatefulWidget {
 }
 
 class _MaterielListScreenState extends State<MaterielListScreen> {
-  final IMaterielRepository _materielRepository = FirestoreMaterielRepository();
+  // DI: Injected via GetIt
+  final IMaterielRepository _materielRepository = getIt<IMaterielRepository>();
   final _searchController = TextEditingController();
   String _searchQuery = '';
   String? _filterEtat;

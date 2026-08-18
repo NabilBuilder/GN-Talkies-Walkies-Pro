@@ -12,6 +12,7 @@ import 'package:firebase_core_platform_interface/test.dart' as fcp_test;
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import 'package:gestion_materiel/di/service_locator.dart';
 import 'package:gestion_materiel/models/materiel.dart';
 import 'package:gestion_materiel/repositories/firestore_materiel_repository.dart';
 import 'package:gestion_materiel/repositories/i_materiel_repository.dart';
@@ -211,6 +212,11 @@ void main() {
     );
     store = <String, Map<String, Map<String, dynamic>>>{};
     cfsi.FirebaseFirestorePlatform.instance = _FakeFirestore(store);
+    await setupServiceLocator();
+  });
+
+  tearDownAll(() async {
+    await resetServiceLocator();
   });
 
   setUp(() {
