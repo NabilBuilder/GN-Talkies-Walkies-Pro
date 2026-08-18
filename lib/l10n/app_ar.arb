@@ -8,5 +8,9 @@
   "search": "البحث عن مادة",
   "transfer": "تحويل",
   "logout": "تسجيل خروج",
-  "error": "خطأ"
+  "error": "خطأ",
+  "editMaterial": "تعديل المادة",
+  "newMaterial": "مادة جديدة",
+  "createMaterial": "حفظ",
+  "updateMaterial": "تحديث"
 }

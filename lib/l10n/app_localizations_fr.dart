@@ -37,4 +37,16 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get error => 'Erreur';
+
+  @override
+  String get editMaterial => 'Modifier le matériel';
+
+  @override
+  String get newMaterial => 'Nouveau matériel';
+
+  @override
+  String get createMaterial => 'Enregistrer';
+
+  @override
+  String get updateMaterial => 'Mettre à jour';
 }

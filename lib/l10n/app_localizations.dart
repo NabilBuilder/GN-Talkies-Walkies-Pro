@@ -157,6 +157,30 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'Erreur'**
   String get error;
+
+  /// No description provided for @editMaterial.
+  ///
+  /// In fr, this message translates to:
+  /// **'Modifier le matériel'**
+  String get editMaterial;
+
+  /// No description provided for @newMaterial.
+  ///
+  /// In fr, this message translates to:
+  /// **'Nouveau matériel'**
+  String get newMaterial;
+
+  /// No description provided for @createMaterial.
+  ///
+  /// In fr, this message translates to:
+  /// **'Enregistrer'**
+  String get createMaterial;
+
+  /// No description provided for @updateMaterial.
+  ///
+  /// In fr, this message translates to:
+  /// **'Mettre à jour'**
+  String get updateMaterial;
 }
 
 class _AppLocalizationsDelegate

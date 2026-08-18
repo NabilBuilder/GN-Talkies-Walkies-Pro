@@ -8,5 +8,9 @@
   "search": "Rechercher un matériel",
   "transfer": "Transférer",
   "logout": "Déconnexion",
-  "error": "Erreur"
+  "error": "Erreur",
+  "editMaterial": "Modifier le matériel",
+  "newMaterial": "Nouveau matériel",
+  "createMaterial": "Enregistrer",
+  "updateMaterial": "Mettre à jour"
 }

@@ -37,4 +37,16 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get error => 'خطأ';
+
+  @override
+  String get editMaterial => 'تعديل المادة';
+
+  @override
+  String get newMaterial => 'مادة جديدة';
+
+  @override
+  String get createMaterial => 'حفظ';
+
+  @override
+  String get updateMaterial => 'تحديث';
 }

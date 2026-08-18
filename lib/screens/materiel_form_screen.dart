@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../l10n/app_localizations.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 import '../models/materiel.dart';
@@ -151,8 +152,8 @@ class _MaterielFormScreenState extends State<MaterielFormScreen> {
           SnackBar(
             content: Text(
               widget.materiel != null
-                  ? 'Matériel mis à jour avec succès'
-                  : 'Matériel créé avec succès',
+                  ? '${AppLocalizations.of(context)!.save} ✓'
+                  : '${AppLocalizations.of(context)!.save} ✓',
             ),
             backgroundColor: Colors.green,
           ),
@@ -163,7 +164,7 @@ class _MaterielFormScreenState extends State<MaterielFormScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Erreur: $e'),
+            content: Text('${AppLocalizations.of(context)!.error}: $e'),
             backgroundColor: Colors.red,
           ),
         );
@@ -181,7 +182,7 @@ class _MaterielFormScreenState extends State<MaterielFormScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(isEditing ? 'Modifier le matériel' : 'Nouveau matériel'),
+        title: Text(isEditing ? AppLocalizations.of(context)!.editMaterial : AppLocalizations.of(context)!.newMaterial),
         backgroundColor: const Color(0xFF1B5E20),
         foregroundColor: Colors.white,
       ),
@@ -380,7 +381,7 @@ class _MaterielFormScreenState extends State<MaterielFormScreen> {
                   child: _isLoading
                       ? const CircularProgressIndicator(color: Colors.white)
                       : Text(
-                          isEditing ? 'Mettre à jour' : 'Enregistrer',
+                          isEditing ? AppLocalizations.of(context)!.updateMaterial : AppLocalizations.of(context)!.createMaterial,
                           style: const TextStyle(fontSize: 16),
                         ),
                 ),
