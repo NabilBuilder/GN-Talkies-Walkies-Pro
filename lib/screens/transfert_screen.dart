@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
+import '../di/service_locator.dart';
 import '../models/materiel.dart';
 import '../models/site.dart';
-import '../repositories/firestore_historique_transfert_repository.dart';
-import '../repositories/firestore_site_repository.dart';
 import '../repositories/i_historique_transfert_repository.dart';
 import '../repositories/i_site_repository.dart';
 
@@ -18,9 +17,11 @@ class TransfertScreen extends StatefulWidget {
 class _TransfertScreenState extends State<TransfertScreen> {
   final _formKey = GlobalKey<FormState>();
   final _motifController = TextEditingController();
+  // DI: Injected via GetIt
   final IHistoriqueTransfertRepository _transfertRepository =
-      FirestoreHistoriqueTransfertRepository();
-  final ISiteRepository _siteRepository = FirestoreSiteRepository();
+      getIt<IHistoriqueTransfertRepository>();
+  // DI: Injected via GetIt
+  final ISiteRepository _siteRepository = getIt<ISiteRepository>();
   String? _selectedDestination;
   List<Site> _sites = [];
   bool _isLoading = false;
