@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../l10n/app_localizations.dart';
 import '../models/materiel.dart';
 import '../di/service_locator.dart';
 import '../repositories/i_materiel_repository.dart';
@@ -71,7 +72,7 @@ class _MaterielListScreenState extends State<MaterielListScreen> {
                 TextField(
                   controller: _searchController,
                   decoration: InputDecoration(
-                    hintText: 'Rechercher un matériel...',
+                    hintText: '${AppLocalizations.of(context)!.search}...',
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
                     ),
@@ -122,7 +123,7 @@ class _MaterielListScreenState extends State<MaterielListScreen> {
               stream: _materielRepository.getMateriels(),
               builder: (context, snapshot) {
                 if (snapshot.hasError) {
-                  return Center(child: Text('Erreur: ${snapshot.error}'));
+                  return Center(child: Text('${AppLocalizations.of(context)!.error}: ${snapshot.error}'));
                 }
 
                 if (!snapshot.hasData) {
@@ -219,13 +220,13 @@ class _MaterielListScreenState extends State<MaterielListScreen> {
                                 ],
                               ),
                             ),
-                            const PopupMenuItem(
+                            PopupMenuItem(
                               value: 'transfert',
                               child: Row(
                                 children: [
-                                  Icon(Icons.swap_horiz, size: 20),
-                                  SizedBox(width: 8),
-                                  Text('Transférer'),
+                                  const Icon(Icons.swap_horiz, size: 20),
+                                  const SizedBox(width: 8),
+                                  Text(AppLocalizations.of(context)!.transfer),
                                 ],
                               ),
                             ),

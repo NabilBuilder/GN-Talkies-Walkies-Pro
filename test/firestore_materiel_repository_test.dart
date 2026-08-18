@@ -10,6 +10,8 @@ import 'package:cloud_firestore_platform_interface/cloud_firestore_platform_inte
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_core_platform_interface/test.dart' as fcp_test;
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:gestion_materiel/l10n/app_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:gestion_materiel/di/service_locator.dart';
@@ -291,7 +293,16 @@ void main() {
       'mat-2': _sampleMateriel('mat-2', designation: 'Kenwood TK-3201').toMap(),
     };
 
-    await tester.pumpWidget(const MaterialApp(home: MaterielListScreen()));
+    await tester.pumpWidget(MaterialApp(
+      localizationsDelegates: const [
+        AppLocalizations.delegate,
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
+      supportedLocales: AppLocalizations.supportedLocales,
+      home: const MaterielListScreen(),
+    ));
     await tester.pumpAndSettle();
 
     expect(find.text('Talkie Walkie Motorola GP340'), findsOneWidget);
