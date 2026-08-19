@@ -8,6 +8,7 @@ import '../repositories/i_historique_transfert_repository.dart';
 import '../repositories/i_marche_repository.dart';
 import '../repositories/i_materiel_repository.dart';
 import '../repositories/i_site_repository.dart';
+import '../l10n/app_localizations.dart';
 
 class DashboardScreen extends StatefulWidget {
   const DashboardScreen({super.key});
@@ -89,7 +90,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Tableau de bord',
+          AppLocalizations.of(context)!.dashboardTitle,
           style: theme.textTheme.headlineMedium?.copyWith(
             fontWeight: FontWeight.bold,
             color: const Color(0xFF1B5E20),
@@ -97,7 +98,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
         ),
         const SizedBox(height: 4),
         Text(
-          'Vue d\'ensemble du matériel',
+          AppLocalizations.of(context)!.dashboardSubtitle,
           style: theme.textTheme.bodyMedium?.copyWith(color: Colors.grey),
         ),
       ],
@@ -115,37 +116,37 @@ class _DashboardScreenState extends State<DashboardScreen> {
       runSpacing: 12,
       children: [
         _StatCard(
-          title: 'Total',
+          title: AppLocalizations.of(context)!.totalEquipment,
           count: total,
           icon: Icons.inventory_2,
           color: Colors.blue,
         ),
         _StatCard(
-          title: 'Actifs',
+          title: AppLocalizations.of(context)!.operational,
           count: actifCount,
           icon: Icons.check_circle,
           color: Colors.green,
         ),
         _StatCard(
-          title: 'En panne',
+          title: AppLocalizations.of(context)!.inRepair,
           count: panneCount,
           icon: Icons.warning,
           color: Colors.orange,
         ),
         _StatCard(
-          title: 'Perdus',
+          title: AppLocalizations.of(context)!.lost,
           count: perduCount,
           icon: Icons.cancel,
           color: Colors.red,
         ),
         _StatCard(
-          title: 'Sites',
+          title: AppLocalizations.of(context)!.sites,
           count: sites.length,
           icon: Icons.location_city,
           color: Colors.indigo,
         ),
         _StatCard(
-          title: 'Marchés',
+          title: AppLocalizations.of(context)!.markets,
           count: marches.length,
           icon: Icons.business,
           color: Colors.purple,
@@ -166,8 +167,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
-              'Répartition par état',
+            Text(
+              AppLocalizations.of(context)!.statusDistribution,
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 16),
@@ -206,9 +207,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
               spacing: 24,
               runSpacing: 8,
               children: [
-                _legendItem('Actif', Colors.green, actif),
-                _legendItem('En panne', Colors.orange, panne),
-                _legendItem('Perdu', Colors.red, perdu),
+                _legendItem(AppLocalizations.of(context)!.statusActive, Colors.green, actif),
+                _legendItem(AppLocalizations.of(context)!.statusInRepair, Colors.orange, panne),
+                _legendItem(AppLocalizations.of(context)!.statusLost, Colors.red, perdu),
               ],
             ),
           ],
@@ -222,7 +223,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
     if (total == 0) {
       return [
         PieChartSectionData(
-          title: 'Aucun',
+          title: AppLocalizations.of(context)!.none,
           value: 1,
           color: Colors.grey,
           titleStyle: const TextStyle(color: Colors.white, fontSize: 12),
@@ -284,7 +285,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
   Widget _buildSiteChart(List<Materiel> materiels) {
     final counts = <String, int>{};
     for (final m in materiels) {
-      final site = m.siteActuel.isEmpty ? 'Non défini' : m.siteActuel;
+      final site = m.siteActuel.isEmpty ? AppLocalizations.of(context)!.undefined : m.siteActuel;
       counts[site] = (counts[site] ?? 0) + 1;
     }
 
@@ -292,11 +293,11 @@ class _DashboardScreenState extends State<DashboardScreen> {
       ..sort((a, b) => b.value.compareTo(a.value));
 
     if (sortedEntries.isEmpty) {
-      return const Card(
+      return Card(
         elevation: 2,
         child: Padding(
-          padding: EdgeInsets.all(16),
-          child: Text('Aucun matériel à afficher'),
+          padding: const EdgeInsets.all(16),
+          child: Text(AppLocalizations.of(context)!.noEquipmentToDisplay),
         ),
       );
     }
@@ -312,8 +313,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
-              'Matériels par site',
+            Text(
+              AppLocalizations.of(context)!.equipmentBySite,
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 16),
@@ -431,8 +432,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
-              'Transferts récents',
+            Text(
+              AppLocalizations.of(context)!.recentTransfers,
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 12),
@@ -440,10 +441,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
               stream: _transfertRepository.getHistory(),
               builder: (context, snapshot) {
                 if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                  return const Padding(
-                    padding: EdgeInsets.symmetric(vertical: 16),
+                  return Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 16),
                     child: Text(
-                      'Aucun transfert enregistré',
+                      AppLocalizations.of(context)!.noTransfersRecorded,
                       style: TextStyle(color: Colors.grey),
                     ),
                   );

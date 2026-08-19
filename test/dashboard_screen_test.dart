@@ -10,6 +10,8 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_core_platform_interface/test.dart' as fcp_test;
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:gestion_materiel/l10n/app_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:gestion_materiel/di/service_locator.dart';
@@ -130,11 +132,22 @@ void main() {
   });
 
   testWidgets('Dashboard renders with sample data', (WidgetTester tester) async {
-    await tester.pumpWidget(const MaterialApp(home: DashboardScreen()));
+    await tester.pumpWidget(MaterialApp(
+      locale: const Locale('fr'),
+      localizationsDelegates: const [
+        AppLocalizations.delegate,
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
+      supportedLocales: AppLocalizations.supportedLocales,
+      home: const DashboardScreen(),
+    ));
     await tester.pumpAndSettle();
 
-    // Header + section titles.
+    // Header + section titles (French by default).
     expect(find.text('Tableau de bord'), findsOneWidget);
+    expect(find.text("Vue d'ensemble du matériel"), findsOneWidget);
     expect(find.text('Répartition par état'), findsOneWidget);
     expect(find.text('Matériels par site'), findsOneWidget);
     expect(find.text('Transferts récents'), findsOneWidget);
