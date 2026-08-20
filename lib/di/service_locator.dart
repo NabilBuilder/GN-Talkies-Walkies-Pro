@@ -12,6 +12,8 @@ import '../repositories/i_site_repository.dart';
 import '../repositories/i_utilisateur_repository.dart';
 import '../services/locale_service.dart';
 import '../services/theme_service.dart';
+import '../services/local_storage_service.dart';
+import '../services/sync_service.dart';
 
 /// Central service locator for dependency injection.
 ///
@@ -45,6 +47,14 @@ Future<void> setupServiceLocator() async {
     )
     ..registerLazySingleton<IThemeService>(
       () => ThemeService(),
+    )
+    ..registerLazySingleton<ILocalStorageService>(
+      () => HiveLocalStorageService(),
+    )
+    ..registerLazySingleton<ISyncService>(
+      () => FirestoreSyncService(
+        localStorage: getIt<ILocalStorageService>(),
+      ),
     );
 }
 
