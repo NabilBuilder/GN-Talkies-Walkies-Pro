@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import '../l10n/app_localizations.dart';
 import '../theme/app_theme.dart';
 import 'login_screen.dart';
 import 'home_screen.dart';
-import '../models/utilisateur.dart';
-import '../services/auth_service.dart';
+import '../di/service_locator.dart';
+import '../repositories/i_utilisateur_repository.dart';
 
 /// Splash screen shown on app startup.
 /// Shows logo for 2 seconds, then navigates based on auth state.
@@ -48,8 +47,8 @@ class _SplashScreenState extends State<SplashScreen>
     if (user != null && mounted) {
       // User is logged in, fetch their profile and go to home
       try {
-        final authService = AuthService();
-        final utilisateur = await authService.getUtilisateurActuel();
+        final repository = getIt<IUtilisateurRepository>();
+        final utilisateur = await repository.getById(user.uid);
         if (mounted && utilisateur != null) {
           Navigator.pushReplacement(
             context,
@@ -106,20 +105,20 @@ class _SplashScreenState extends State<SplashScreen>
                 },
               ),
               const SizedBox(height: 24),
-              // App Name
-              Text(
-                AppLocalizations.of(context)!.appName,
-                style: const TextStyle(
+              // App Name — hardcoded to avoid null-safety crash on first frame
+              const Text(
+                'GN Talkies-Walkies Pro',
+                style: TextStyle(
                   fontSize: 28,
                   fontWeight: FontWeight.bold,
                   color: Colors.white,
                 ),
               ),
               const SizedBox(height: 8),
-              // Welcome Message
-              Text(
-                AppLocalizations.of(context)!.welcomeMessage,
-                style: const TextStyle(
+              // Loading text — hardcoded
+              const Text(
+                'Chargement...',
+                style: TextStyle(
                   fontSize: 16,
                   color: Colors.white70,
                 ),
