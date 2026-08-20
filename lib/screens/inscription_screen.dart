@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../services/auth_service.dart';
 import '../models/utilisateur.dart';
 import 'home_screen.dart';
+import '../l10n/app_localizations.dart';
 
 class InscriptionScreen extends StatefulWidget {
   const InscriptionScreen({super.key});
@@ -43,8 +44,8 @@ class _InscriptionScreenState extends State<InscriptionScreen> {
 
       if (utilisateur != null && mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Compte créé avec succès !'),
+          SnackBar(
+            content: Text(AppLocalizations.of(context)!.accountCreated),
             backgroundColor: Colors.green,
           ),
         );
@@ -75,11 +76,11 @@ class _InscriptionScreenState extends State<InscriptionScreen> {
   String _getRoleLabel(RoleUtilisateur role) {
     switch (role) {
       case RoleUtilisateur.administrateurGeneral:
-        return 'Administrateur Général';
+        return AppLocalizations.of(context)!.roleAdmin;
       case RoleUtilisateur.superviseur:
-        return 'Superviseur';
+        return AppLocalizations.of(context)!.roleSupervisor;
       case RoleUtilisateur.chefDEquipe:
-        return 'Chef d\'équipe';
+        return AppLocalizations.of(context)!.roleChefEquipe;
     }
   }
 
@@ -99,7 +100,7 @@ class _InscriptionScreenState extends State<InscriptionScreen> {
     return Scaffold(
       backgroundColor: const Color(0xFF1B5E20),
       appBar: AppBar(
-        title: const Text('Créer un compte'),
+        title: Text(AppLocalizations.of(context)!.createAccountTitle),
         backgroundColor: const Color(0xFF1B5E20),
         foregroundColor: Colors.white,
       ),
@@ -137,12 +138,12 @@ class _InscriptionScreenState extends State<InscriptionScreen> {
                   controller: _nomController,
                   style: const TextStyle(color: Colors.white),
                   decoration: _inputDecoration(
-                    label: 'Nom complet',
+                    label: AppLocalizations.of(context)!.fullName,
                     icon: Icons.person,
                   ),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
-                      return 'Veuillez entrer votre nom';
+                      return AppLocalizations.of(context)!.enterName;
                     }
                     return null;
                   },
@@ -153,15 +154,15 @@ class _InscriptionScreenState extends State<InscriptionScreen> {
                   keyboardType: TextInputType.emailAddress,
                   style: const TextStyle(color: Colors.white),
                   decoration: _inputDecoration(
-                    label: 'Email',
+                    label: AppLocalizations.of(context)!.email,
                     icon: Icons.email,
                   ),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
-                      return 'Veuillez entrer votre email';
+                      return AppLocalizations.of(context)!.enterEmail;
                     }
                     if (!value.contains('@')) {
-                      return 'Email invalide';
+                      return AppLocalizations.of(context)!.invalidEmail;
                     }
                     return null;
                   },
@@ -172,7 +173,7 @@ class _InscriptionScreenState extends State<InscriptionScreen> {
                   obscureText: _obscurePassword,
                   style: const TextStyle(color: Colors.white),
                   decoration: _inputDecoration(
-                    label: 'Mot de passe',
+                    label: AppLocalizations.of(context)!.password,
                     icon: Icons.lock,
                     suffixIcon: IconButton(
                       icon: Icon(
@@ -190,17 +191,17 @@ class _InscriptionScreenState extends State<InscriptionScreen> {
                   ),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
-                      return 'Veuillez entrer votre mot de passe';
+                      return AppLocalizations.of(context)!.enterPassword;
                     }
                     if (value.length < 6) {
-                      return 'Mot de passe trop court (minimum 6)';
+                      return AppLocalizations.of(context)!.passwordTooShortWithMin;
                     }
                     return null;
                   },
                 ),
                 const SizedBox(height: 24),
-                const Text(
-                  'Sélectionnez votre rôle',
+                Text(
+                  AppLocalizations.of(context)!.selectRole,
                   style: TextStyle(
                     color: Colors.white70,
                     fontSize: 14,
@@ -248,8 +249,8 @@ class _InscriptionScreenState extends State<InscriptionScreen> {
                         ? const CircularProgressIndicator(
                             color: Colors.white,
                           )
-                        : const Text(
-                            'CRÉER LE COMPTE',
+                        : Text(
+                            AppLocalizations.of(context)!.createAccountBtn.toUpperCase(),
                             style: TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.bold,
@@ -260,8 +261,8 @@ class _InscriptionScreenState extends State<InscriptionScreen> {
                 const SizedBox(height: 16),
                 TextButton(
                   onPressed: () => Navigator.pop(context),
-                  child: const Text(
-                    'Déjà un compte ? Se connecter',
+                  child: Text(
+                    AppLocalizations.of(context)!.alreadyHaveAccount,
                     style: TextStyle(color: Colors.white70),
                   ),
                 ),

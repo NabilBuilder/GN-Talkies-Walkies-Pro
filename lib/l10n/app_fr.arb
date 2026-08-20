@@ -55,5 +55,16 @@
   "passwordTooShort": "Mot de passe trop court",
   "rolesDescription": "Rôles: Administrateur Général | Superviseur | Chef d'équipe",
   "initializing": "Initialisation en cours...",
-  "initDemoData": "Initialiser les données de démonstration"
+  "initDemoData": "Initialiser les données de démonstration",
+  "accountCreated": "Compte créé avec succès !",
+  "roleAdmin": "Administrateur Général",
+  "roleSupervisor": "Superviseur",
+  "roleChefEquipe": "Chef d'équipe",
+  "createAccountTitle": "Créer un compte",
+  "fullName": "Nom complet",
+  "enterName": "Veuillez entrer votre nom",
+  "passwordTooShortWithMin": "Mot de passe trop court (minimum 6)",
+  "selectRole": "Sélectionnez votre rôle",
+  "createAccountBtn": "CRÉER LE COMPTE",
+  "alreadyHaveAccount": "Déjà un compte ? Se connecter"
 }

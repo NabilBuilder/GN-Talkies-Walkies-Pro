@@ -55,5 +55,16 @@
   "passwordTooShort": "كلمة المرور قصيرة جداً",
   "rolesDescription": "الأدوار: مدير عام | مشرف | رئيس فريق",
   "initializing": "جاري التهيئة...",
-  "initDemoData": "تهيئة بيانات التجربة"
+  "initDemoData": "تهيئة بيانات التجربة",
+  "accountCreated": "تم إنشاء الحساب بنجاح !",
+  "roleAdmin": "مدير عام",
+  "roleSupervisor": "مشرف",
+  "roleChefEquipe": "رئيس فريق",
+  "createAccountTitle": "إنشاء حساب",
+  "fullName": "الاسم الكامل",
+  "enterName": "يرجى إدخال الاسم",
+  "passwordTooShortWithMin": "كلمة المرور قصيرة جداً (6 أحرف على الأقل)",
+  "selectRole": "اختر دورك",
+  "createAccountBtn": "إنشاء الحساب",
+  "alreadyHaveAccount": "لديك حساب بالفعل؟ تسجيل الدخول"
 }
