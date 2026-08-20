@@ -4,6 +4,7 @@ import '../models/materiel.dart';
 import '../models/site.dart';
 import '../repositories/i_historique_transfert_repository.dart';
 import '../repositories/i_site_repository.dart';
+import '../l10n/app_localizations.dart';
 
 class TransfertScreen extends StatefulWidget {
   final Materiel materiel;
@@ -63,8 +64,8 @@ class _TransfertScreenState extends State<TransfertScreen> {
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Transfert effectué avec succès'),
+          SnackBar(
+            content: Text(AppLocalizations.of(context)!.transferSuccess),
             backgroundColor: Colors.green,
           ),
         );
@@ -74,7 +75,7 @@ class _TransfertScreenState extends State<TransfertScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Erreur: $e'),
+            content: Text('${AppLocalizations.of(context)!.error}: $e'),
             backgroundColor: Colors.red,
           ),
         );
@@ -90,7 +91,7 @@ class _TransfertScreenState extends State<TransfertScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Transfert de matériel'),
+        title: Text(AppLocalizations.of(context)!.transferMaterialTitle),
         backgroundColor: const Color(0xFF1B5E20),
         foregroundColor: Colors.white,
       ),
@@ -107,18 +108,18 @@ class _TransfertScreenState extends State<TransfertScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text(
-                        'Matériel à transférer',
+                      Text(
+                        AppLocalizations.of(context)!.materialToTransfer,
                         style: TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
                       const Divider(),
-                      _buildInfoRow('Désignation', widget.materiel.designation),
+                      _buildInfoRow(AppLocalizations.of(context)!.designation, widget.materiel.designation),
                       _buildInfoRow('Code QR', widget.materiel.codeQR),
-                      _buildInfoRow('Site actuel', widget.materiel.siteActuel),
-                      _buildInfoRow('Marché', widget.materiel.marche),
+                      _buildInfoRow(AppLocalizations.of(context)!.currentSite, widget.materiel.siteActuel),
+                      _buildInfoRow(AppLocalizations.of(context)!.market, widget.materiel.marche),
                     ],
                   ),
                 ),
@@ -130,8 +131,8 @@ class _TransfertScreenState extends State<TransfertScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text(
-                        'Informations de transfert',
+                      Text(
+                        AppLocalizations.of(context)!.transferInfo,
                         style: TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
@@ -141,8 +142,8 @@ class _TransfertScreenState extends State<TransfertScreen> {
                       const SizedBox(height: 16),
                       DropdownButtonFormField<String>(
                         initialValue: _selectedDestination,
-                        decoration: const InputDecoration(
-                          labelText: 'Site de destination *',
+                        decoration: InputDecoration(
+                          labelText: AppLocalizations.of(context)!.destinationSite,
                           border: OutlineInputBorder(),
                           prefixIcon: Icon(Icons.location_on),
                         ),
@@ -157,7 +158,7 @@ class _TransfertScreenState extends State<TransfertScreen> {
                         },
                         validator: (value) {
                           if (value == null || value.isEmpty) {
-                            return 'Veuillez sélectionner un site de destination';
+                            return AppLocalizations.of(context)!.selectDestination;
                           }
                           return null;
                         },
@@ -166,14 +167,14 @@ class _TransfertScreenState extends State<TransfertScreen> {
                       TextFormField(
                         controller: _motifController,
                         maxLines: 3,
-                        decoration: const InputDecoration(
-                          labelText: 'Motif du transfert *',
+                        decoration: InputDecoration(
+                          labelText: AppLocalizations.of(context)!.transferReason,
                           border: OutlineInputBorder(),
                           alignLabelWithHint: true,
                         ),
                         validator: (value) {
                           if (value == null || value.isEmpty) {
-                            return 'Veuillez entrer un motif';
+                            return AppLocalizations.of(context)!.enterReason;
                           }
                           return null;
                         },
@@ -196,8 +197,8 @@ class _TransfertScreenState extends State<TransfertScreen> {
                   ),
                   child: _isLoading
                       ? const CircularProgressIndicator(color: Colors.white)
-                      : const Text(
-                          'Effectuer le transfert',
+                      : Text(
+                          AppLocalizations.of(context)!.executeTransfer,
                           style: TextStyle(fontSize: 16),
                         ),
                 ),

@@ -30,5 +30,18 @@
   "noEquipmentToDisplay": "لا توجد مواد للعرض",
   "equipmentBySite": "المواد حسب الموقع",
   "recentTransfers": "عمليات التحويل الأخيرة",
-  "noTransfersRecorded": "لا توجد عمليات تحويل مسجلة"
+  "noTransfersRecorded": "لا توجد عمليات تحويل مسجلة",
+  "transferSuccess": "تم التحويل بنجاح",
+  "transferMaterialTitle": "تحويل مادة",
+  "materialToTransfer": "المادة المراد تحويلها",
+  "designation": "التسمية",
+  "codeQR": "رمز QR",
+  "currentSite": "الموقع الحالي",
+  "market": "السوق",
+  "transferInfo": "معلومات التحويل",
+  "destinationSite": "الموقع الوجهة *",
+  "selectDestination": "يرجى اختيار موقع الوجهة",
+  "transferReason": "سبب التحويل *",
+  "enterReason": "يرجى إدخال السبب",
+  "executeTransfer": "تنفيذ التحويل"
 }

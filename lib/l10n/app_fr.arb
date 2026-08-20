@@ -30,5 +30,18 @@
   "noEquipmentToDisplay": "Aucun matériel à afficher",
   "equipmentBySite": "Matériels par site",
   "recentTransfers": "Transferts récents",
-  "noTransfersRecorded": "Aucun transfert enregistré"
+  "noTransfersRecorded": "Aucun transfert enregistré",
+  "transferSuccess": "Transfert effectué avec succès",
+  "transferMaterialTitle": "Transfert de matériel",
+  "materialToTransfer": "Matériel à transférer",
+  "designation": "Désignation",
+  "codeQR": "Code QR",
+  "currentSite": "Site actuel",
+  "market": "Marché",
+  "transferInfo": "Informations de transfert",
+  "destinationSite": "Site de destination *",
+  "selectDestination": "Veuillez sélectionner un site de destination",
+  "transferReason": "Motif du transfert *",
+  "enterReason": "Veuillez entrer un motif",
+  "executeTransfer": "Effectuer le transfert"
 }
