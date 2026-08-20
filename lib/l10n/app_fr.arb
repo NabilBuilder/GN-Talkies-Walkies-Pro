@@ -106,5 +106,9 @@
   "offlineMode": "Mode hors ligne",
   "syncing": "Synchronisation en cours...",
   "lastSync": "Dernière synchronisation",
-  "pullToRefresh": "Tirer pour actualiser"
+  "pullToRefresh": "Tirer pour actualiser",
+  "somethingWentWrong": "Quelque chose s'est mal passé",
+  "tryAgain": "Réessayer",
+  "emptyList": "Aucune donnée disponible",
+  "loading": "Chargement..."
 }

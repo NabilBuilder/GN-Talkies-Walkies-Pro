@@ -12,6 +12,7 @@ import '../l10n/app_localizations.dart';
 import '../services/locale_service.dart';
 import '../services/theme_service.dart';
 import '../services/sync_service.dart';
+import '../widgets/error_dialog.dart';
 
 class DashboardScreen extends StatefulWidget {
   const DashboardScreen({super.key});
@@ -105,8 +106,15 @@ class _DashboardScreenState extends State<DashboardScreen> {
       body: StreamBuilder<List<Materiel>>(
         stream: _materielRepository.getMateriels(),
         builder: (context, materielSnapshot) {
-          if (materielSnapshot.hasError || !materielSnapshot.hasData) {
-            return const Center(child: CircularProgressIndicator());
+          if (materielSnapshot.hasError) {
+            return EmptyStateWidget(
+              icon: Icons.error_outline,
+              message: AppLocalizations.of(context)!.somethingWentWrong,
+            );
+          }
+
+          if (!materielSnapshot.hasData) {
+            return LoadingWidget(message: AppLocalizations.of(context)!.loading);
           }
 
           final materiels = materielSnapshot.data!;

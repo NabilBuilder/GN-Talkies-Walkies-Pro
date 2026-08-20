@@ -106,5 +106,9 @@
   "offlineMode": "وضع عدم الاتصال",
   "syncing": "جاري المزامنة...",
   "lastSync": "آخر مزامنة",
-  "pullToRefresh": "اسحب للتحديث"
+  "pullToRefresh": "اسحب للتحديث",
+  "somethingWentWrong": "حدث خطأ ما",
+  "tryAgain": "أعد المحاولة",
+  "emptyList": "لا توجد بيانات",
+  "loading": "جاري التحميل..."
 }

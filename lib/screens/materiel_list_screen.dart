@@ -3,6 +3,7 @@ import '../l10n/app_localizations.dart';
 import '../models/materiel.dart';
 import '../di/service_locator.dart';
 import '../repositories/i_materiel_repository.dart';
+import '../widgets/error_dialog.dart';
 import 'materiel_form_screen.dart';
 import 'transfert_screen.dart';
 
@@ -123,11 +124,15 @@ class _MaterielListScreenState extends State<MaterielListScreen> {
               stream: _materielRepository.getMateriels(),
               builder: (context, snapshot) {
                 if (snapshot.hasError) {
-                  return Center(child: Text('${AppLocalizations.of(context)!.error}: ${snapshot.error}'));
+                  return EmptyStateWidget(
+                    icon: Icons.error_outline,
+                    message: AppLocalizations.of(context)!.somethingWentWrong,
+                    subtitle: snapshot.error.toString(),
+                  );
                 }
 
                 if (!snapshot.hasData) {
-                  return const Center(child: CircularProgressIndicator());
+                  return LoadingWidget(message: AppLocalizations.of(context)!.loading);
                 }
 
                 var materiels = snapshot.data!;
@@ -148,18 +153,9 @@ class _MaterielListScreenState extends State<MaterielListScreen> {
                 }
 
                 if (materiels.isEmpty) {
-                  return const Center(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(Icons.inventory_2, size: 64, color: Colors.grey),
-                        SizedBox(height: 16),
-                        Text(
-                          'Aucun matériel trouvé',
-                          style: TextStyle(color: Colors.grey, fontSize: 16),
-                        ),
-                      ],
-                    ),
+                  return EmptyStateWidget(
+                    icon: Icons.inventory_2,
+                    message: AppLocalizations.of(context)!.emptyList,
                   );
                 }
 
