@@ -123,7 +123,26 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
                   return RefreshIndicator(
                     onRefresh: () async {
-                      setState(() {});
+                      // Perform sync
+                      final synced = await _syncService.syncAll();
+                      if (mounted) {
+                        setState(() {
+                          _isSynced = synced;
+                        });
+                      }
+                      if (mounted) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text(
+                              synced
+                                  ? AppLocalizations.of(context)!.synced
+                                  : AppLocalizations.of(context)!.offlineMode,
+                            ),
+                            backgroundColor: synced ? Colors.green : Colors.orange,
+                            duration: const Duration(seconds: 2),
+                          ),
+                        );
+                      }
                     },
                     child: SingleChildScrollView(
                       padding: const EdgeInsets.all(16),

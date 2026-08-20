@@ -105,5 +105,6 @@
   "synced": "Synchronisé",
   "offlineMode": "Mode hors ligne",
   "syncing": "Synchronisation en cours...",
-  "lastSync": "Dernière synchronisation"
+  "lastSync": "Dernière synchronisation",
+  "pullToRefresh": "Tirer pour actualiser"
 }

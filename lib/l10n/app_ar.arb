@@ -105,5 +105,6 @@
   "synced": "متزامن",
   "offlineMode": "وضع عدم الاتصال",
   "syncing": "جاري المزامنة...",
-  "lastSync": "آخر مزامنة"
+  "lastSync": "آخر مزامنة",
+  "pullToRefresh": "اسحب للتحديث"
 }
