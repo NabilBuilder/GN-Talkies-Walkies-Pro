@@ -1,4 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import '../models/utilisateur.dart';
 import '../repositories/firestore_utilisateur_repository.dart';
 import '../repositories/i_utilisateur_repository.dart';
@@ -25,7 +26,12 @@ class AuthService {
         return utilisateur;
       }
       return null;
-    } on FirebaseAuthException catch (e) {
+    } on FirebaseAuthException catch (e, stackTrace) {
+      await FirebaseCrashlytics.instance.recordError(
+        e,
+        stackTrace,
+        reason: 'Login failed: ${e.code}',
+      );
       throw Exception(_getErrorMessage(e.code));
     }
   }
