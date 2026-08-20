@@ -49,7 +49,7 @@ class _SplashScreenState extends State<SplashScreen>
       // User is logged in, fetch their profile and go to home
       try {
         final authService = AuthService();
-        final utilisateur = await authService.getByUid(user.uid);
+        final utilisateur = await authService.getUtilisateurActuel();
         if (mounted && utilisateur != null) {
           Navigator.pushReplacement(
             context,
