@@ -78,6 +78,10 @@ Future<void> setupServiceLocator({
         localStorage: localStorage ?? _NullLocalStorage(),
       ),
     );
+
+  // Initialize persisted preferences
+  await getIt<IThemeService>().init();
+  await getIt<ILocaleService>().init();
 }
 
 /// Tears down all registrations — used only in tests.
