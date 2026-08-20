@@ -101,5 +101,9 @@
   "navDashboard": "Dashboard",
   "navScanner": "Scanner",
   "navHistory": "Historique",
-  "navExport": "Exporter"
+  "navExport": "Exporter",
+  "synced": "Synchronisé",
+  "offlineMode": "Mode hors ligne",
+  "syncing": "Synchronisation en cours...",
+  "lastSync": "Dernière synchronisation"
 }

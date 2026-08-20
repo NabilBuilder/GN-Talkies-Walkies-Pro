@@ -11,6 +11,7 @@ import '../repositories/i_site_repository.dart';
 import '../l10n/app_localizations.dart';
 import '../services/locale_service.dart';
 import '../services/theme_service.dart';
+import '../services/sync_service.dart';
 
 class DashboardScreen extends StatefulWidget {
   const DashboardScreen({super.key});
@@ -28,6 +29,33 @@ class _DashboardScreenState extends State<DashboardScreen> {
   final IMaterielRepository _materielRepository = getIt<IMaterielRepository>();
   // DI: Injected via GetIt
   final IHistoriqueTransfertRepository _transfertRepository = getIt<IHistoriqueTransfertRepository>();
+  // DI: Injected via GetIt
+  final ISyncService _syncService = getIt<ISyncService>();
+
+  bool _isSynced = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _checkSyncStatus();
+  }
+
+  void _checkSyncStatus() async {
+    try {
+      final result = await _syncService.syncAll();
+      if (mounted) {
+        setState(() {
+          _isSynced = result;
+        });
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() {
+          _isSynced = false;
+        });
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -36,12 +64,21 @@ class _DashboardScreenState extends State<DashboardScreen> {
     final currentLocale = localeService.getCurrentLocale();
     final isDark = themeService.getThemeMode() == ThemeMode.dark;
 
+
+
     return Scaffold(
       appBar: AppBar(
         title: Text(AppLocalizations.of(context)!.dashboardTitle),
         backgroundColor: const Color(0xFF1B5E20),
         foregroundColor: Colors.white,
         actions: [
+          // Sync status indicator
+          Icon(
+            _isSynced ? Icons.cloud_done : Icons.cloud_off,
+            color: _isSynced ? Colors.green : Colors.orange,
+            size: 24,
+          ),
+          const SizedBox(width: 8),
           IconButton(
             icon: const Icon(Icons.translate),
             tooltip: AppLocalizations.of(context)!.switchLanguage,

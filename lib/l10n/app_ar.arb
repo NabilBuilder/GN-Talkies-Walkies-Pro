@@ -101,5 +101,9 @@
   "navDashboard": "لوحة القيادة",
   "navScanner": "الماسح",
   "navHistory": "السجل",
-  "navExport": "تصدير"
+  "navExport": "تصدير",
+  "synced": "متزامن",
+  "offlineMode": "وضع عدم الاتصال",
+  "syncing": "جاري المزامنة...",
+  "lastSync": "آخر مزامنة"
 }

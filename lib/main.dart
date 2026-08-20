@@ -6,6 +6,7 @@ import 'di/service_locator.dart';
 import 'screens/login_screen.dart';
 import 'services/locale_service.dart';
 import 'services/theme_service.dart';
+import 'services/sync_service.dart';
 import 'theme/app_theme.dart';
 
 // Création & Développement : Boukhoulkhal Nabil (2026)
@@ -16,6 +17,15 @@ void main() async {
     options: DefaultFirebaseOptions.currentPlatform,
   );
   await setupServiceLocator();
+
+  // Initial sync to cache data for offline use
+  try {
+    await getIt<ISyncService>().syncAll();
+  } catch (e) {
+    // App continues with cached data if offline
+    debugPrint('Initial sync failed (offline mode): $e');
+  }
+
   runApp(const GestionMaterielApp());
 }
 
