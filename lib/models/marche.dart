@@ -19,6 +19,18 @@ class Marche {
     required this.budget,
   });
 
+  factory Marche.fromMap(Map<String, dynamic> data) {
+    return Marche(
+      id: data['id'] ?? '',
+      numero: data['numero'] ?? '',
+      intitule: data['intitule'] ?? '',
+      client: data['client'] ?? '',
+      dateDebut: (data['dateDebut'] as Timestamp?)?.toDate() ?? DateTime.now(),
+      dateFin: (data['dateFin'] as Timestamp?)?.toDate(),
+      budget: (data['budget'] ?? 0).toDouble(),
+    );
+  }
+
   factory Marche.fromFirestore(DocumentSnapshot doc) {
     final data = doc.data() as Map<String, dynamic>;
     return Marche(

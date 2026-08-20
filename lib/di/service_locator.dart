@@ -20,21 +20,46 @@ import '../services/sync_service.dart';
 /// All repositories are registered as singletons — the same instance is
 /// returned for every lookup. This keeps the code decoupled from concrete
 /// implementations while remaining simple (no generators, no code-gen).
+/// Création & Développement : Boukhoulkhal Nabil (2026)
 final GetIt getIt = GetIt.instance;
+
+/// Initializes Hive local storage. Must be called before [setupServiceLocator]
+/// in production, or skipped / passed a pre-initialized instance in tests.
+///
+/// [path] — optional directory path (used by tests to avoid path_provider).
+Future<ILocalStorageService> initLocalStorage([String? path]) async {
+  final localStorage = HiveLocalStorageService();
+  await localStorage.init(path);
+  return localStorage;
+}
 
 /// Registers every repository interface → Firestore implementation.
 ///
 /// Must be called **once** in [main] before [runApp].
-Future<void> setupServiceLocator() async {
+/// [localStorage] — pre-initialized local storage (or null to skip caching).
+Future<void> setupServiceLocator({
+  ILocalStorageService? localStorage,
+}) async {
+  // Register localStorage first (may be null for tests that don't need it)
+  if (localStorage != null) {
+    getIt.registerSingleton<ILocalStorageService>(localStorage);
+  }
+
   getIt
     ..registerLazySingleton<IMaterielRepository>(
-      () => FirestoreMaterielRepository(),
+      () => FirestoreMaterielRepository(
+        localStorage: localStorage,
+      ),
     )
     ..registerLazySingleton<ISiteRepository>(
-      () => FirestoreSiteRepository(),
+      () => FirestoreSiteRepository(
+        localStorage: localStorage,
+      ),
     )
     ..registerLazySingleton<IMarcheRepository>(
-      () => FirestoreMarcheRepository(),
+      () => FirestoreMarcheRepository(
+        localStorage: localStorage,
+      ),
     )
     ..registerLazySingleton<IHistoriqueTransfertRepository>(
       () => FirestoreHistoriqueTransfertRepository(),
@@ -48,12 +73,9 @@ Future<void> setupServiceLocator() async {
     ..registerLazySingleton<IThemeService>(
       () => ThemeService(),
     )
-    ..registerLazySingleton<ILocalStorageService>(
-      () => HiveLocalStorageService(),
-    )
     ..registerLazySingleton<ISyncService>(
       () => FirestoreSyncService(
-        localStorage: getIt<ILocalStorageService>(),
+        localStorage: localStorage ?? _NullLocalStorage(),
       ),
     );
 }
@@ -61,4 +83,24 @@ Future<void> setupServiceLocator() async {
 /// Tears down all registrations — used only in tests.
 Future<void> resetServiceLocator() async {
   await getIt.reset();
+}
+
+/// Null-object pattern: no-op local storage when Hive is not available.
+class _NullLocalStorage implements ILocalStorageService {
+  @override
+  Future<void> init([String? path]) async {}
+  @override
+  Future<void> cacheMateriels(List<Map<String, dynamic>> materiels) async {}
+  @override
+  List<Map<String, dynamic>> getCachedMateriels() => [];
+  @override
+  Future<void> cacheSites(List<Map<String, dynamic>> sites) async {}
+  @override
+  List<Map<String, dynamic>> getCachedSites() => [];
+  @override
+  Future<void> cacheMarches(List<Map<String, dynamic>> marches) async {}
+  @override
+  List<Map<String, dynamic>> getCachedMarches() => [];
+  @override
+  Future<void> clearCache() async {}
 }

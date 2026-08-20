@@ -16,7 +16,9 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-  await setupServiceLocator();
+  // Initialize Hive local storage for offline caching
+  final localStorage = await initLocalStorage();
+  await setupServiceLocator(localStorage: localStorage);
 
   // Initial sync to cache data for offline use
   try {

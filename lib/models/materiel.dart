@@ -33,6 +33,27 @@ class Materiel {
     required this.enregistrePar,
   });
 
+  factory Materiel.fromMap(Map<String, dynamic> data, String id) {
+    return Materiel(
+      id: id,
+      codeQR: data['codeQR'] ?? '',
+      designation: data['designation'] ?? '',
+      numeroSerie: data['numeroSerie'] ?? '',
+      marque: data['marque'] ?? '',
+      modele: data['modele'] ?? '',
+      etat: EtatMateriel.values.firstWhere(
+        (e) => e.name == data['etat'],
+        orElse: () => EtatMateriel.actif,
+      ),
+      siteActuel: data['siteActuel'] ?? '',
+      marche: data['marche'] ?? '',
+      imageUrl: data['imageUrl'] ?? '',
+      dateEnregistrement: (data['dateEnregistrement'] as Timestamp?)?.toDate() ?? DateTime.now(),
+      derniereMiseAJour: (data['derniereMiseAJour'] as Timestamp?)?.toDate() ?? DateTime.now(),
+      enregistrePar: data['enregistrePar'] ?? '',
+    );
+  }
+
   factory Materiel.fromFirestore(DocumentSnapshot doc) {
     final data = doc.data() as Map<String, dynamic>;
     return Materiel(

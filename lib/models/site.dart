@@ -17,6 +17,17 @@ class Site {
     required this.dateCreation,
   });
 
+  factory Site.fromMap(Map<String, dynamic> data) {
+    return Site(
+      id: data['id'] ?? '',
+      nom: data['nom'] ?? '',
+      adresse: data['adresse'] ?? '',
+      ville: data['ville'] ?? '',
+      responsable: data['responsable'] ?? '',
+      dateCreation: (data['dateCreation'] as Timestamp?)?.toDate() ?? DateTime.now(),
+    );
+  }
+
   factory Site.fromFirestore(DocumentSnapshot doc) {
     final data = doc.data() as Map<String, dynamic>;
     return Site(
