@@ -1,0 +1,101 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Helper functions
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function isAdmin() {
+      return isAuthenticated() && get(/databases/$(database)/documents/Utilisateurs/$(request.auth.uid)).data.role == 'administrateurGeneral';
+    }
+
+    function isSupervisor() {
+      return isAuthenticated() && get(/databases/$(database)/documents/Utilisateurs/$(request.auth.uid)).data.role == 'superviseur';
+    }
+
+    function isChefDEquipe() {
+      return isAuthenticated() && get(/databases/$(database)/documents/Utilisateurs/$(request.auth.uid)).data.role == 'chefDEquipe';
+    }
+
+    function getUserRole() {
+      return get(/databases/$(database)/documents/Utilisateurs/$(request.auth.uid)).data.role;
+    }
+
+    // === UTILISATEURS COLLECTION ===
+    match /Utilisateurs/{userId} {
+      // Users can only read their own profile
+      allow read: if isAuthenticated() && request.auth.uid == userId;
+
+      // Users can create their own profile (registration)
+      allow create: if isAuthenticated() && request.auth.uid == userId;
+
+      // Users can update their own profile (but not change role)
+      allow update: if isAuthenticated()
+        && request.auth.uid == userId
+        && request.resource.data.role == resource.data.role;
+
+      // Only admins can delete users
+      allow delete: if isAdmin();
+    }
+
+    // === MATERIELS COLLECTION ===
+    match /Materiels/{materielId} {
+      // Any authenticated user can read materiels
+      allow read: if isAuthenticated();
+
+      // Only admins and supervisors can create materiels
+      allow create: if isAuthenticated() && (isAdmin() || isSupervisor());
+
+      // Admins can update all, supervisors only assigned items
+      allow update: if isAuthenticated() && (
+        isAdmin() ||
+        (isSupervisor() && resource.data.siteActuel == request.resource.data.siteActuel)
+      );
+
+      // Only admins can delete materiels
+      allow delete: if isAdmin();
+    }
+
+    // === SITES COLLECTION ===
+    match /Sites/{siteId} {
+      // Any authenticated user can read sites
+      allow read: if isAuthenticated();
+
+      // Only admins can create/delete sites
+      allow create: if isAdmin();
+      allow update: if isAdmin();
+      allow delete: if isAdmin();
+    }
+
+    // === MARCHES COLLECTION ===
+    match /Marches/{marcheId} {
+      // Any authenticated user can read marches
+      allow read: if isAuthenticated();
+
+      // Only admins can manage marches
+      allow create: if isAdmin();
+      allow update: if isAdmin();
+      allow delete: if isAdmin();
+    }
+
+    // === HISTORIQUE_TRANSFERTS COLLECTION ===
+    match /Historique_Transferts/{transferId} {
+      // Any authenticated user can read transfer history
+      allow read: if isAuthenticated();
+
+      // Authenticated users can create transfers (with batch)
+      allow create: if isAuthenticated();
+
+      // Only the transferrer or admins can update (confirm) transfers
+      allow update: if isAuthenticated() && (
+        isAdmin() ||
+        resource.data.transferePar == request.auth.uid
+      );
+
+      // No deletes allowed for audit trail
+      allow delete: if false;
+    }
+  }
+}
