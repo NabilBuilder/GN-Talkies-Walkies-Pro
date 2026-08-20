@@ -9,6 +9,8 @@ import '../repositories/i_marche_repository.dart';
 import '../repositories/i_materiel_repository.dart';
 import '../repositories/i_site_repository.dart';
 import '../l10n/app_localizations.dart';
+import '../services/locale_service.dart';
+import '../services/theme_service.dart';
 
 class DashboardScreen extends StatefulWidget {
   const DashboardScreen({super.key});
@@ -29,7 +31,40 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final localeService = getIt<ILocaleService>();
+    final themeService = getIt<IThemeService>();
+    final currentLocale = localeService.getCurrentLocale();
+    final isDark = themeService.getThemeMode() == ThemeMode.dark;
+
     return Scaffold(
+      appBar: AppBar(
+        title: Text(AppLocalizations.of(context)!.dashboardTitle),
+        backgroundColor: const Color(0xFF1B5E20),
+        foregroundColor: Colors.white,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.translate),
+            tooltip: AppLocalizations.of(context)!.switchLanguage,
+            onPressed: () async {
+              final newLocale = currentLocale.languageCode == 'fr'
+                  ? const Locale('ar')
+                  : const Locale('fr');
+              await localeService.setLocale(newLocale);
+              if (mounted) setState(() {});
+            },
+          ),
+          IconButton(
+            icon: Icon(isDark ? Icons.light_mode : Icons.dark_mode),
+            tooltip: AppLocalizations.of(context)!.switchTheme,
+            onPressed: () async {
+              await themeService.setThemeMode(
+                isDark ? ThemeMode.light : ThemeMode.dark,
+              );
+              if (mounted) setState(() {});
+            },
+          ),
+        ],
+      ),
       body: StreamBuilder<List<Materiel>>(
         stream: _materielRepository.getMateriels(),
         builder: (context, materielSnapshot) {

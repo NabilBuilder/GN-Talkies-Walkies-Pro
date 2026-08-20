@@ -146,7 +146,8 @@ void main() {
     await tester.pumpAndSettle();
 
     // Header + section titles (French by default).
-    expect(find.text('Tableau de bord'), findsOneWidget);
+    // Note: 'Tableau de bord' appears in both AppBar and header.
+    expect(find.text('Tableau de bord'), findsNWidgets(2));
     expect(find.text("Vue d'ensemble du matériel"), findsOneWidget);
     expect(find.text('Répartition par état'), findsOneWidget);
     expect(find.text('Matériels par site'), findsOneWidget);
