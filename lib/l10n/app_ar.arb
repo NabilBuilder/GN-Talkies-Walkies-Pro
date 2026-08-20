@@ -110,5 +110,7 @@
   "somethingWentWrong": "حدث خطأ ما",
   "tryAgain": "أعد المحاولة",
   "emptyList": "لا توجد بيانات",
-  "loading": "جاري التحميل..."
+  "loading": "جاري التحميل...",
+  "appName": "إدارة المواد",
+  "welcomeMessage": "مرحباً بك في التطبيق"
 }

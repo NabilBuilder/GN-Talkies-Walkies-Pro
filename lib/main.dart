@@ -3,7 +3,7 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
 import 'di/service_locator.dart';
-import 'screens/login_screen.dart';
+import 'screens/splash_screen.dart';
 import 'services/locale_service.dart';
 import 'services/theme_service.dart';
 import 'services/sync_service.dart';
@@ -52,7 +52,7 @@ class GestionMaterielApp extends StatelessWidget {
         GlobalWidgetsLocalizations.delegate,
         GlobalCupertinoLocalizations.delegate,
       ],
-      home: const LoginScreen(),
+      home: const SplashScreen(),
     );
   }
 }

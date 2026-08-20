@@ -110,5 +110,7 @@
   "somethingWentWrong": "Quelque chose s'est mal passé",
   "tryAgain": "Réessayer",
   "emptyList": "Aucune donnée disponible",
-  "loading": "Chargement..."
+  "loading": "Chargement...",
+  "appName": "Gestion de Matériel",
+  "welcomeMessage": "Bienvenue sur l'application"
 }
