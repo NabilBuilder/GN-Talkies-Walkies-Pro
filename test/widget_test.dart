@@ -1,9 +1,12 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_core_platform_interface/test.dart' as fcp_test;
+import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:gestion_materiel/l10n/app_localizations.dart';
 
 import 'package:gestion_materiel/di/service_locator.dart';
-import 'package:gestion_materiel/main.dart';
+import 'package:gestion_materiel/screens/login_screen.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -29,7 +32,17 @@ void main() {
   });
 
   testWidgets('App should render login screen', (WidgetTester tester) async {
-    await tester.pumpWidget(const GestionMaterielApp());
+    await tester.pumpWidget(MaterialApp(
+      locale: const Locale('fr'),
+      localizationsDelegates: const [
+        AppLocalizations.delegate,
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
+      supportedLocales: AppLocalizations.supportedLocales,
+      home: const LoginScreen(),
+    ));
     await tester.pumpAndSettle();
 
     expect(find.text('Gardnet - Talkie Walkie Pro'), findsOneWidget);

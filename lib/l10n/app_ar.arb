@@ -43,5 +43,17 @@
   "selectDestination": "يرجى اختيار موقع الوجهة",
   "transferReason": "سبب التحويل *",
   "enterReason": "يرجى إدخال السبب",
-  "executeTransfer": "تنفيذ التحويل"
+  "executeTransfer": "تنفيذ التحويل",
+  "profileNotFound": "لم يتم العثور على ملف المستخدم.",
+  "dataInitialized": "تم تهيئة البيانات",
+  "initError": "خطأ في التهيئة",
+  "email": "البريد الإلكتروني",
+  "enterEmail": "يرجى إدخال البريد الإلكتروني",
+  "invalidEmail": "بريد إلكتروني غير صالح",
+  "password": "كلمة المرور",
+  "enterPassword": "يرجى إدخال كلمة المرور",
+  "passwordTooShort": "كلمة المرور قصيرة جداً",
+  "rolesDescription": "الأدوار: مدير عام | مشرف | رئيس فريق",
+  "initializing": "جاري التهيئة...",
+  "initDemoData": "تهيئة بيانات التجربة"
 }

@@ -43,5 +43,17 @@
   "selectDestination": "Veuillez sélectionner un site de destination",
   "transferReason": "Motif du transfert *",
   "enterReason": "Veuillez entrer un motif",
-  "executeTransfer": "Effectuer le transfert"
+  "executeTransfer": "Effectuer le transfert",
+  "profileNotFound": "Profil utilisateur non trouvé dans Firestore.",
+  "dataInitialized": "Données initialisées",
+  "initError": "Erreur d'initialisation",
+  "email": "Email",
+  "enterEmail": "Veuillez entrer votre email",
+  "invalidEmail": "Email invalide",
+  "password": "Mot de passe",
+  "enterPassword": "Veuillez entrer votre mot de passe",
+  "passwordTooShort": "Mot de passe trop court",
+  "rolesDescription": "Rôles: Administrateur Général | Superviseur | Chef d'équipe",
+  "initializing": "Initialisation en cours...",
+  "initDemoData": "Initialiser les données de démonstration"
 }

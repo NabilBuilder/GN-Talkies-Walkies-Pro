@@ -3,6 +3,7 @@ import '../services/auth_service.dart';
 import '../services/seed_service.dart';
 import 'home_screen.dart';
 import 'inscription_screen.dart';
+import '../l10n/app_localizations.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -47,7 +48,7 @@ class _LoginScreenState extends State<LoginScreen> {
           ),
         );
       } else if (mounted) {
-        _showError('Profil utilisateur non trouvé dans Firestore.');
+        _showError(AppLocalizations.of(context)!.profileNotFound);
       }
     } catch (e) {
       if (mounted) {
@@ -80,7 +81,7 @@ class _LoginScreenState extends State<LoginScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(
-              'Données initialisées: ${result['Sites']} Sites, '
+              '${AppLocalizations.of(context)!.dataInitialized}: ${result['Sites']} Sites, '
               '${result['Marches']} Marchés, ${result['Materiels']} Matériels',
             ),
             backgroundColor: Colors.green,
@@ -90,7 +91,7 @@ class _LoginScreenState extends State<LoginScreen> {
       }
     } catch (e) {
       if (mounted) {
-        _showError('Erreur d\'initialisation: $e');
+        _showError('${AppLocalizations.of(context)!.initError}: $e');
       }
     } finally {
       if (mounted) {
@@ -136,8 +137,8 @@ class _LoginScreenState extends State<LoginScreen> {
                           ),
                         ),
                         const SizedBox(height: 8),
-                        const Text(
-                          'Gestion de Matériel',
+                        Text(
+                          AppLocalizations.of(context)!.appTitle,
                           style: TextStyle(
                             fontSize: 16,
                             color: Colors.white70,
@@ -149,7 +150,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           keyboardType: TextInputType.emailAddress,
                           style: const TextStyle(color: Colors.white),
                           decoration: InputDecoration(
-                            labelText: 'Email',
+                            labelText: AppLocalizations.of(context)!.email,
                             labelStyle: const TextStyle(color: Colors.white70),
                             prefixIcon: const Icon(Icons.email, color: Colors.white70),
                             filled: true,
@@ -169,10 +170,10 @@ class _LoginScreenState extends State<LoginScreen> {
                           ),
                           validator: (value) {
                             if (value == null || value.isEmpty) {
-                              return 'Veuillez entrer votre email';
+                              return AppLocalizations.of(context)!.enterEmail;
                             }
                             if (!value.contains('@')) {
-                              return 'Email invalide';
+                              return AppLocalizations.of(context)!.invalidEmail;
                             }
                             return null;
                           },
@@ -183,7 +184,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           obscureText: _obscurePassword,
                           style: const TextStyle(color: Colors.white),
                           decoration: InputDecoration(
-                            labelText: 'Mot de passe',
+                            labelText: AppLocalizations.of(context)!.password,
                             labelStyle: const TextStyle(color: Colors.white70),
                             prefixIcon: const Icon(Icons.lock, color: Colors.white70),
                             suffixIcon: IconButton(
@@ -212,10 +213,10 @@ class _LoginScreenState extends State<LoginScreen> {
                           ),
                           validator: (value) {
                             if (value == null || value.isEmpty) {
-                              return 'Veuillez entrer votre mot de passe';
+                              return AppLocalizations.of(context)!.enterPassword;
                             }
                             if (value.length < 6) {
-                              return 'Mot de passe trop court';
+                              return AppLocalizations.of(context)!.passwordTooShort;
                             }
                             return null;
                           },
@@ -242,8 +243,8 @@ class _LoginScreenState extends State<LoginScreen> {
                                       color: Colors.white,
                                     ),
                                   )
-                                : const Text(
-                                    'SE CONNECTER',
+                                : Text(
+                                    AppLocalizations.of(context)!.login.toUpperCase(),
                                     style: TextStyle(
                                       fontSize: 16,
                                       fontWeight: FontWeight.bold,
@@ -275,8 +276,8 @@ class _LoginScreenState extends State<LoginScreen> {
                               ),
                             ),
                             icon: const Icon(Icons.person_add),
-                            label: const Text(
-                              'CRÉER UN COMPTE',
+                            label: Text(
+                              AppLocalizations.of(context)!.createAccount.toUpperCase(),
                               style: TextStyle(
                                 fontSize: 16,
                                 fontWeight: FontWeight.bold,
@@ -285,8 +286,8 @@ class _LoginScreenState extends State<LoginScreen> {
                           ),
                         ),
                         const SizedBox(height: 16),
-                        const Text(
-                          'Rôles: Administrateur Général | Superviseur | Chef d\'équipe',
+                        Text(
+                          AppLocalizations.of(context)!.rolesDescription,
                           style: TextStyle(
                             fontSize: 12,
                             color: Colors.white54,
@@ -312,8 +313,8 @@ class _LoginScreenState extends State<LoginScreen> {
                                 ),
                           label: Text(
                             _isSeeding
-                                ? 'Initialisation en cours...'
-                                : 'Initialiser les données de démonstration',
+                                ? AppLocalizations.of(context)!.initializing
+                                : AppLocalizations.of(context)!.initDemoData,
                             style: const TextStyle(
                               color: Colors.white70,
                               fontSize: 12,
