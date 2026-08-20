@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../services/firestore_service.dart';
 import '../services/export_service.dart';
+import '../l10n/app_localizations.dart';
 
 class ExportScreen extends StatefulWidget {
   const ExportScreen({super.key});
@@ -28,7 +29,7 @@ class _ExportScreenState extends State<ExportScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Export Excel créé: $filePath'),
+            content: Text('${AppLocalizations.of(context)!.exportCreated} Excel: $filePath'),
             backgroundColor: Colors.green,
           ),
         );
@@ -62,7 +63,7 @@ class _ExportScreenState extends State<ExportScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Export Excel créé: $filePath'),
+            content: Text('${AppLocalizations.of(context)!.exportCreated} Excel: $filePath'),
             backgroundColor: Colors.green,
           ),
         );
@@ -96,7 +97,7 @@ class _ExportScreenState extends State<ExportScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Export PDF créé: $filePath'),
+            content: Text('${AppLocalizations.of(context)!.exportCreated} PDF: $filePath'),
             backgroundColor: Colors.green,
           ),
         );
@@ -130,7 +131,7 @@ class _ExportScreenState extends State<ExportScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Export PDF créé: $filePath'),
+            content: Text('${AppLocalizations.of(context)!.exportCreated} PDF: $filePath'),
             backgroundColor: Colors.green,
           ),
         );
@@ -164,7 +165,7 @@ class _ExportScreenState extends State<ExportScreen> {
                   ),
                   const SizedBox(height: 16),
                   Text(
-                    'Export en cours ($_exportType)...',
+                    '${AppLocalizations.of(context)!.exportInProgress} ($_exportType)...',
                     style: const TextStyle(fontSize: 16),
                   ),
                 ],
@@ -175,28 +176,28 @@ class _ExportScreenState extends State<ExportScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  const Text(
-                    'Exportation des données',
+                  Text(
+                    AppLocalizations.of(context)!.exportTitle,
                     style: TextStyle(
                       fontSize: 24,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
                   const SizedBox(height: 8),
-                  const Text(
-                    'Exportez les données en format Excel ou PDF',
+                  Text(
+                    AppLocalizations.of(context)!.exportSubtitle,
                     style: TextStyle(color: Colors.grey),
                   ),
                   const SizedBox(height: 24),
                   _buildExportSection(
-                    title: 'Matériels',
+                    title: AppLocalizations.of(context)!.equipment,
                     icon: Icons.inventory_2,
                     excelFunction: _exporterMaterielsExcel,
                     pdfFunction: _exporterMaterielsPDF,
                   ),
                   const SizedBox(height: 16),
                   _buildExportSection(
-                    title: 'Historique des transferts',
+                    title: AppLocalizations.of(context)!.transferHistory,
                     icon: Icons.history,
                     excelFunction: _exporterTransfertsExcel,
                     pdfFunction: _exporterTransfertsPDF,

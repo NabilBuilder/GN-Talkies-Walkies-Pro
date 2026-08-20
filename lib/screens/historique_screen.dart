@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../models/historique_transfert.dart';
 import '../services/firestore_service.dart';
+import '../l10n/app_localizations.dart';
 
 class HistoriqueScreen extends StatefulWidget {
   const HistoriqueScreen({super.key});
@@ -19,7 +20,7 @@ class _HistoriqueScreenState extends State<HistoriqueScreen> {
         stream: _firestoreService.getHistoriqueTransferts(),
         builder: (context, snapshot) {
           if (snapshot.hasError) {
-            return Center(child: Text('Erreur: ${snapshot.error}'));
+            return Center(child: Text('${AppLocalizations.of(context)!.error}: ${snapshot.error}'));
           }
 
           if (!snapshot.hasData) {
@@ -29,14 +30,14 @@ class _HistoriqueScreenState extends State<HistoriqueScreen> {
           final transferts = snapshot.data!;
 
           if (transferts.isEmpty) {
-            return const Center(
+            return Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Icon(Icons.history, size: 64, color: Colors.grey),
                   SizedBox(height: 16),
                   Text(
-                    'Aucun historique de transfert',
+                    AppLocalizations.of(context)!.noTransferHistory,
                     style: TextStyle(color: Colors.grey, fontSize: 16),
                   ),
                 ],
@@ -87,11 +88,11 @@ class _HistoriqueScreenState extends State<HistoriqueScreen> {
                       ),
                       const SizedBox(height: 4),
                       Text(
-                        'Motif: ${transfert.motif}',
+                        '${AppLocalizations.of(context)!.reason}: ${transfert.motif}',
                         style: const TextStyle(color: Colors.grey),
                       ),
                       Text(
-                        'Date: ${transfert.dateTransfert.day}/${transfert.dateTransfert.month}/${transfert.dateTransfert.year}',
+                        '${AppLocalizations.of(context)!.date}: ${transfert.dateTransfert.day}/${transfert.dateTransfert.month}/${transfert.dateTransfert.year}',
                         style: const TextStyle(color: Colors.grey, fontSize: 12),
                       ),
                     ],
@@ -99,13 +100,13 @@ class _HistoriqueScreenState extends State<HistoriqueScreen> {
                   trailing: PopupMenuButton(
                     itemBuilder: (context) {
                       final items = <PopupMenuItem<String>>[
-                        const PopupMenuItem(
+                        PopupMenuItem(
                           value: 'details',
                           child: Row(
                             children: [
                               Icon(Icons.info, size: 20),
                               SizedBox(width: 8),
-                              Text('Détails'),
+                              Text(AppLocalizations.of(context)!.details),
                             ],
                           ),
                         ),
@@ -113,13 +114,13 @@ class _HistoriqueScreenState extends State<HistoriqueScreen> {
 
                       if (!transfert.confirme) {
                         items.add(
-                          const PopupMenuItem(
+                          PopupMenuItem(
                             value: 'confirmer',
                             child: Row(
                               children: [
                                 Icon(Icons.check, size: 20, color: Colors.green),
                                 SizedBox(width: 8),
-                                Text('Confirmer réception'),
+                                Text(AppLocalizations.of(context)!.confirmReceipt),
                               ],
                             ),
                           ),
@@ -149,29 +150,29 @@ class _HistoriqueScreenState extends State<HistoriqueScreen> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Détails du transfert'),
+        title: Text(AppLocalizations.of(context)!.transferDetails),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _buildDetailRow('Matériel', transfert.materielDesignation),
+            _buildDetailRow(AppLocalizations.of(context)!.material, transfert.materielDesignation),
             _buildDetailRow('Code QR', transfert.codeQR),
-            _buildDetailRow('Site origine', transfert.siteOrigine),
-            _buildDetailRow('Site destination', transfert.siteDestination),
-            _buildDetailRow('Transféré par', transfert.transferePar),
-            _buildDetailRow('Motif', transfert.motif),
+            _buildDetailRow(AppLocalizations.of(context)!.siteOrigin, transfert.siteOrigine),
+            _buildDetailRow(AppLocalizations.of(context)!.siteDestination, transfert.siteDestination),
+            _buildDetailRow(AppLocalizations.of(context)!.transferredBy, transfert.transferePar),
+            _buildDetailRow(AppLocalizations.of(context)!.reason, transfert.motif),
             _buildDetailRow(
-              'Date transfert',
+              AppLocalizations.of(context)!.transferDate,
               '${transfert.dateTransfert.day}/${transfert.dateTransfert.month}/${transfert.dateTransfert.year}',
             ),
             _buildDetailRow(
-              'Statut',
-              transfert.confirme ? 'Confirmé' : 'En attente',
+              AppLocalizations.of(context)!.status,
+              transfert.confirme ? AppLocalizations.of(context)!.confirmed : AppLocalizations.of(context)!.pending,
             ),
             if (transfert.confirme) ...[
-              _buildDetailRow('Confirmé par', transfert.confirmePar),
+              _buildDetailRow(AppLocalizations.of(context)!.confirmedBy, transfert.confirmePar),
               _buildDetailRow(
-                'Date confirmation',
+                AppLocalizations.of(context)!.confirmationDate,
                 transfert.dateConfirmation != null
                     ? '${transfert.dateConfirmation!.day}/${transfert.dateConfirmation!.month}/${transfert.dateConfirmation!.year}'
                     : '-',
@@ -182,7 +183,7 @@ class _HistoriqueScreenState extends State<HistoriqueScreen> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Fermer'),
+            child: Text(AppLocalizations.of(context)!.close),
           ),
         ],
       ),
@@ -218,8 +219,8 @@ class _HistoriqueScreenState extends State<HistoriqueScreen> {
       await _firestoreService.confirmerTransfert(transfert.id, '');
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Transfert confirmé avec succès'),
+          SnackBar(
+            content: Text(AppLocalizations.of(context)!.transferConfirmed),
             backgroundColor: Colors.green,
           ),
         );
@@ -228,7 +229,7 @@ class _HistoriqueScreenState extends State<HistoriqueScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Erreur: $e'),
+            content: Text('${AppLocalizations.of(context)!.error}: $e'),
             backgroundColor: Colors.red,
           ),
         );
