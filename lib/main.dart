@@ -8,6 +8,7 @@ import 'firebase_options.dart';
 import 'di/service_locator.dart';
 import 'l10n/app_localizations.dart';
 import 'screens/splash_screen.dart';
+import 'services/auth_service.dart';
 import 'services/locale_service.dart';
 import 'services/theme_service.dart';
 import 'services/sync_service.dart';
@@ -55,6 +56,14 @@ void main() async {
     await setupServiceLocator();
   }
 
+  // Create demo account if needed
+  try {
+    final authService = AuthService();
+    await authService.createDemoAccountIfNeeded();
+  } catch (e) {
+    debugPrint('Demo account creation failed: $e');
+  }
+
   // Initial sync to cache data for offline use
   try {
     await getIt<ISyncService>().syncAll();
@@ -68,6 +77,13 @@ void main() async {
         reason: 'Initial sync failed',
       );
     } catch (_) {}
+  }
+
+  // Initialize demo data if collections are empty
+  try {
+    await getIt<ISyncService>().initializeDemoDataIfNeeded();
+  } catch (e) {
+    debugPrint('Demo data initialization failed: $e');
   }
 
   // Run app with error handling
@@ -93,7 +109,7 @@ class GestionMaterielApp extends StatelessWidget {
     final localeService = getIt<ILocaleService>();
 
     return MaterialApp(
-      title: 'Gestion Matériel',
+      title: 'GN Talkies-Walkies Pro',
       debugShowCheckedModeBanner: false,
       theme: AppTheme.lightTheme,
       darkTheme: AppTheme.darkTheme,

@@ -19,6 +19,7 @@ import 'package:gestion_materiel/models/materiel.dart';
 import 'package:gestion_materiel/repositories/firestore_materiel_repository.dart';
 import 'package:gestion_materiel/repositories/i_materiel_repository.dart';
 import 'package:gestion_materiel/screens/materiel_list_screen.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 /// In-memory Firestore store: collectionPath -> documentId -> document data.
 typedef _Store = Map<String, Map<String, Map<String, dynamic>>>;
@@ -203,6 +204,8 @@ void main() {
   late _Store store;
 
   setUpAll(() async {
+    // Mock SharedPreferences for tests
+    SharedPreferences.setMockInitialValues({});
     fcp_test.setupFirebaseCoreMocks();
     await Firebase.initializeApp(
       options: FirebaseOptions(

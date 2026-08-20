@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
+import 'package:flutter/foundation.dart';
 import '../models/utilisateur.dart';
 import '../repositories/firestore_utilisateur_repository.dart';
 import '../repositories/i_utilisateur_repository.dart';
@@ -61,6 +62,9 @@ class AuthService {
       );
 
       if (credential.user != null) {
+        // Update display name
+        await credential.user!.updateDisplayName(nom);
+
         // Step 2: Create user profile in Firestore
         final utilisateur = Utilisateur(
           id: credential.user!.uid,
@@ -105,6 +109,51 @@ class AuthService {
   Future<Utilisateur?> getUtilisateurActuel() async {
     if (currentUser == null) return null;
     return _repository.getById(currentUser!.uid);
+  }
+
+  /// Creates a demo account if it doesn't exist yet.
+  /// This allows users to quickly test the app without manual registration.
+  Future<void> createDemoAccountIfNeeded() async {
+    const demoEmail = 'nabil.gardnet@gmail.com';
+    const demoPassword = 'Othm@ne2015';
+    const demoName = 'boukhoulkhal nabil';
+    const demoRole = RoleUtilisateur.superviseur;
+
+    try {
+      // Try to create the demo account
+      // If email already exists, Firebase will throw 'email-already-in-use'
+      final credential = await _auth.createUserWithEmailAndPassword(
+        email: demoEmail,
+        password: demoPassword,
+      );
+
+      if (credential.user != null) {
+        // Update display name
+        await credential.user!.updateDisplayName(demoName);
+
+        // Create Firestore profile
+        final demoUser = Utilisateur(
+          id: credential.user!.uid,
+          nom: demoName,
+          email: demoEmail,
+          role: demoRole,
+          dateCreation: DateTime.now(),
+        );
+
+        await _repository.create(demoUser);
+        debugPrint('Demo account created successfully');
+      }
+    } on FirebaseAuthException catch (e) {
+      // If email already in use, that's fine - demo account exists
+      if (e.code == 'email-already-in-use') {
+        debugPrint('Demo account email already registered');
+      } else {
+        debugPrint('Failed to create demo account: ${e.code}');
+      }
+    } catch (e) {
+      // Any other error - log but don't crash
+      debugPrint('Demo account creation skipped: $e');
+    }
   }
 
   String _getRegistrationErrorMessage(String code) {

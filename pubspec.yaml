@@ -1,5 +1,5 @@
 name: gestion_materiel
-description: "A new Flutter project."
+description: "GN Talkies-Walkies Pro - Gestion de matériel Talkie Walkie"
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
@@ -49,6 +49,9 @@ dependencies:
     sdk: flutter
   hive: ^2.2.3
   hive_flutter: ^1.1.0
+  shared_preferences: ^2.5.5
+  firebase_app_check: ^0.4.6
+  firebase_crashlytics: ^5.2.7
 
 dev_dependencies:
   flutter_test:

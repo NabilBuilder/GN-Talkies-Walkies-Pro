@@ -739,6 +739,84 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'Dernière synchronisation'**
   String get lastSync;
+
+  /// No description provided for @pullToRefresh.
+  ///
+  /// In fr, this message translates to:
+  /// **'Tirer pour actualiser'**
+  String get pullToRefresh;
+
+  /// No description provided for @somethingWentWrong.
+  ///
+  /// In fr, this message translates to:
+  /// **'Quelque chose s\'est mal passé'**
+  String get somethingWentWrong;
+
+  /// No description provided for @tryAgain.
+  ///
+  /// In fr, this message translates to:
+  /// **'Réessayer'**
+  String get tryAgain;
+
+  /// No description provided for @emptyList.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aucune donnée disponible'**
+  String get emptyList;
+
+  /// No description provided for @loading.
+  ///
+  /// In fr, this message translates to:
+  /// **'Chargement...'**
+  String get loading;
+
+  /// No description provided for @appName.
+  ///
+  /// In fr, this message translates to:
+  /// **'Gestion de Matériel'**
+  String get appName;
+
+  /// No description provided for @welcomeMessage.
+  ///
+  /// In fr, this message translates to:
+  /// **'Bienvenue sur l\'application'**
+  String get welcomeMessage;
+
+  /// No description provided for @registrationFailed.
+  ///
+  /// In fr, this message translates to:
+  /// **'Échec de l\'inscription'**
+  String get registrationFailed;
+
+  /// No description provided for @emailAlreadyUsed.
+  ///
+  /// In fr, this message translates to:
+  /// **'Email déjà utilisé'**
+  String get emailAlreadyUsed;
+
+  /// No description provided for @weakPassword.
+  ///
+  /// In fr, this message translates to:
+  /// **'Mot de passe trop faible'**
+  String get weakPassword;
+
+  /// No description provided for @networkError.
+  ///
+  /// In fr, this message translates to:
+  /// **'Erreur réseau'**
+  String get networkError;
+
+  /// No description provided for @firestorePermissionError.
+  ///
+  /// In fr, this message translates to:
+  /// **'Erreur de permissions Firestore'**
+  String get firestorePermissionError;
+
+  /// No description provided for @connectionRequired.
+  ///
+  /// In fr, this message translates to:
+  /// **'Connexion Internet requise'**
+  String get connectionRequired;
 }
 
 class _AppLocalizationsDelegate

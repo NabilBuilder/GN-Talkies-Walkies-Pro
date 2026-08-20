@@ -329,4 +329,43 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get lastSync => 'آخر مزامنة';
+
+  @override
+  String get pullToRefresh => 'اسحب للتحديث';
+
+  @override
+  String get somethingWentWrong => 'حدث خطأ ما';
+
+  @override
+  String get tryAgain => 'أعد المحاولة';
+
+  @override
+  String get emptyList => 'لا توجد بيانات';
+
+  @override
+  String get loading => 'جاري التحميل...';
+
+  @override
+  String get appName => 'إدارة المواد';
+
+  @override
+  String get welcomeMessage => 'مرحباً بك في التطبيق';
+
+  @override
+  String get registrationFailed => 'فشل التسجيل';
+
+  @override
+  String get emailAlreadyUsed => 'البريد مستخدم بالفعل';
+
+  @override
+  String get weakPassword => 'كلمة المرور ضعيفة';
+
+  @override
+  String get networkError => 'خطأ في الشبكة';
+
+  @override
+  String get firestorePermissionError => 'خطأ في أذونات Firestore';
+
+  @override
+  String get connectionRequired => 'الاتصال بالإنترنت مطلوب';
 }

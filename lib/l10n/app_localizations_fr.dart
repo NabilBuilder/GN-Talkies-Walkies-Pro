@@ -330,4 +330,43 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get lastSync => 'Dernière synchronisation';
+
+  @override
+  String get pullToRefresh => 'Tirer pour actualiser';
+
+  @override
+  String get somethingWentWrong => 'Quelque chose s\'est mal passé';
+
+  @override
+  String get tryAgain => 'Réessayer';
+
+  @override
+  String get emptyList => 'Aucune donnée disponible';
+
+  @override
+  String get loading => 'Chargement...';
+
+  @override
+  String get appName => 'Gestion de Matériel';
+
+  @override
+  String get welcomeMessage => 'Bienvenue sur l\'application';
+
+  @override
+  String get registrationFailed => 'Échec de l\'inscription';
+
+  @override
+  String get emailAlreadyUsed => 'Email déjà utilisé';
+
+  @override
+  String get weakPassword => 'Mot de passe trop faible';
+
+  @override
+  String get networkError => 'Erreur réseau';
+
+  @override
+  String get firestorePermissionError => 'Erreur de permissions Firestore';
+
+  @override
+  String get connectionRequired => 'Connexion Internet requise';
 }

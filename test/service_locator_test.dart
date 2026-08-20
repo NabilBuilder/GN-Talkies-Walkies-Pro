@@ -14,11 +14,14 @@ import 'package:gestion_materiel/repositories/i_marche_repository.dart';
 import 'package:gestion_materiel/repositories/i_materiel_repository.dart';
 import 'package:gestion_materiel/repositories/i_site_repository.dart';
 import 'package:gestion_materiel/repositories/i_utilisateur_repository.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
   setUpAll(() async {
+    // Mock SharedPreferences for tests
+    SharedPreferences.setMockInitialValues({});
     fcp_test.setupFirebaseCoreMocks();
     try {
       await Firebase.initializeApp(

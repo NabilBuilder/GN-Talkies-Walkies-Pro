@@ -7,11 +7,14 @@ import 'package:gestion_materiel/l10n/app_localizations.dart';
 
 import 'package:gestion_materiel/di/service_locator.dart';
 import 'package:gestion_materiel/screens/login_screen.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
   setUpAll(() async {
+    // Mock SharedPreferences for tests
+    SharedPreferences.setMockInitialValues({});
     // Mock the Firebase platform channels so no native Firebase app is
     // required when running widget tests on the Dart VM.
     fcp_test.setupFirebaseCoreMocks();

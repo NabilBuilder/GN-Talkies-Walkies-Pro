@@ -16,6 +16,7 @@ import 'package:flutter_test/flutter_test.dart';
 
 import 'package:gestion_materiel/di/service_locator.dart';
 import 'package:gestion_materiel/screens/dashboard_screen.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 /// In-memory [cfsi.FirebaseFirestorePlatform] that serves fixed documents for
 /// the collections used by [DashboardScreen].
@@ -112,6 +113,8 @@ void main() {
   setUpAll(() async {
     // Mock the Firebase platform channels so no native Firebase app is
     // required when running widget tests on the Dart VM.
+    // Mock SharedPreferences for tests
+    SharedPreferences.setMockInitialValues({});
     fcp_test.setupFirebaseCoreMocks();
     // Values must match the ones returned by the mock (see MockFirebaseApp).
     await Firebase.initializeApp(
