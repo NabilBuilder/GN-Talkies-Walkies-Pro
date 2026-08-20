@@ -52,7 +52,11 @@ class _LoginScreenState extends State<LoginScreen> {
       }
     } catch (e) {
       if (mounted) {
-        _showError(e.toString().replaceFirst('Exception: ', ''));
+        if (e is AuthServiceException) {
+          _showError(e.message);
+        } else {
+          _showError(e.toString());
+        }
       }
     } finally {
       if (mounted) {

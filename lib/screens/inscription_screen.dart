@@ -58,9 +58,16 @@ class _InscriptionScreenState extends State<InscriptionScreen> {
       }
     } catch (e) {
       if (mounted) {
+        // Extract user-friendly message from AuthServiceException or fallback
+        String message;
+        if (e is AuthServiceException) {
+          message = e.message;
+        } else {
+          message = '${AppLocalizations.of(context)!.error}: ${e.toString()}';
+        }
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(e.toString().replaceFirst('Exception: ', '')),
+            content: Text(message),
             backgroundColor: Colors.red,
             behavior: SnackBarBehavior.floating,
           ),

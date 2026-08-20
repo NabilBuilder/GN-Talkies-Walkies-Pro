@@ -7,6 +7,14 @@ service cloud.firestore {
       return request.auth != null;
     }
 
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+
+    // Note: isAdmin/isSupervisor/isChefDEquipe are NOT used in Utilisateurs rules
+    // because they call get() on the user document, which doesn't exist during
+    // registration (create). Keep these helpers only for other collections.
+
     function isAdmin() {
       return isAuthenticated() && get(/databases/$(database)/documents/Utilisateurs/$(request.auth.uid)).data.role == 'administrateurGeneral';
     }
@@ -25,15 +33,15 @@ service cloud.firestore {
 
     // === UTILISATEURS COLLECTION ===
     match /Utilisateurs/{userId} {
-      // Users can only read their own profile
-      allow read: if isAuthenticated() && request.auth.uid == userId;
+      // Authenticated users can read any user profile (needed for UI displays)
+      allow read: if isAuthenticated();
 
-      // Users can create their own profile (registration)
-      allow create: if isAuthenticated() && request.auth.uid == userId;
+      // Any authenticated user can create their own profile during registration.
+      // No get() call here — the document doesn't exist yet!
+      allow create: if isOwner(userId);
 
-      // Users can update their own profile (but not change role)
-      allow update: if isAuthenticated()
-        && request.auth.uid == userId
+      // Users can update their own profile, but cannot change their role
+      allow update: if isOwner(userId)
         && request.resource.data.role == resource.data.role;
 
       // Only admins can delete users

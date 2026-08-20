@@ -112,5 +112,11 @@
   "emptyList": "لا توجد بيانات",
   "loading": "جاري التحميل...",
   "appName": "إدارة المواد",
-  "welcomeMessage": "مرحباً بك في التطبيق"
+  "welcomeMessage": "مرحباً بك في التطبيق",
+  "registrationFailed": "فشل التسجيل",
+  "emailAlreadyUsed": "البريد مستخدم بالفعل",
+  "weakPassword": "كلمة المرور ضعيفة",
+  "networkError": "خطأ في الشبكة",
+  "firestorePermissionError": "خطأ في أذونات Firestore",
+  "connectionRequired": "الاتصال بالإنترنت مطلوب"
 }

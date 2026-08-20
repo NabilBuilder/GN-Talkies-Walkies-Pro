@@ -112,5 +112,11 @@
   "emptyList": "Aucune donnée disponible",
   "loading": "Chargement...",
   "appName": "Gestion de Matériel",
-  "welcomeMessage": "Bienvenue sur l'application"
+  "welcomeMessage": "Bienvenue sur l'application",
+  "registrationFailed": "Échec de l'inscription",
+  "emailAlreadyUsed": "Email déjà utilisé",
+  "weakPassword": "Mot de passe trop faible",
+  "networkError": "Erreur réseau",
+  "firestorePermissionError": "Erreur de permissions Firestore",
+  "connectionRequired": "Connexion Internet requise"
 }
