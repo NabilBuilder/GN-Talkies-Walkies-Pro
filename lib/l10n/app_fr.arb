@@ -96,5 +96,10 @@
   "lightMode": "Mode clair",
   "darkMode": "Mode sombre",
   "arabic": "Arabe",
-  "french": "Français"
+  "french": "Français",
+  "confirmLogout": "Voulez-vous vous déconnecter ?",
+  "navDashboard": "Dashboard",
+  "navScanner": "Scanner",
+  "navHistory": "Historique",
+  "navExport": "Exporter"
 }

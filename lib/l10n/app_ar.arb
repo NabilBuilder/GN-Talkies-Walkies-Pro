@@ -96,5 +96,10 @@
   "lightMode": "الوضع الفاتح",
   "darkMode": "الوضع الداكن",
   "arabic": "العربية",
-  "french": "الفرنسية"
+  "french": "الفرنسية",
+  "confirmLogout": "هل تريد تسجيل الخروج؟",
+  "navDashboard": "لوحة القيادة",
+  "navScanner": "الماسح",
+  "navHistory": "السجل",
+  "navExport": "تصدير"
 }

@@ -7,6 +7,7 @@ import 'scanner_screen.dart';
 import 'materiel_list_screen.dart';
 import 'historique_screen.dart';
 import 'export_screen.dart';
+import '../l10n/app_localizations.dart';
 
 class HomeScreen extends StatefulWidget {
   final Utilisateur utilisateur;
@@ -39,17 +40,17 @@ class _HomeScreenState extends State<HomeScreen> {
     final confirm = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Déconnexion'),
-        content: const Text('Voulez-vous vous déconnecter ?'),
+        title: Text(AppLocalizations.of(context)!.logout),
+        content: Text(AppLocalizations.of(context)!.confirmLogout),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: const Text('Annuler'),
+            child: Text(AppLocalizations.of(context)!.cancel),
           ),
           TextButton(
             onPressed: () => Navigator.pop(context, true),
             style: TextButton.styleFrom(foregroundColor: Colors.red),
-            child: const Text('Déconnexion'),
+            child: Text(AppLocalizations.of(context)!.logout),
           ),
         ],
       ),
@@ -69,11 +70,11 @@ class _HomeScreenState extends State<HomeScreen> {
   String _getRoleLabel(RoleUtilisateur role) {
     switch (role) {
       case RoleUtilisateur.administrateurGeneral:
-        return 'Administrateur Général';
+        return AppLocalizations.of(context)!.roleAdmin;
       case RoleUtilisateur.superviseur:
-        return 'Superviseur';
+        return AppLocalizations.of(context)!.roleSupervisor;
       case RoleUtilisateur.chefDEquipe:
-        return 'Chef d\'équipe';
+        return AppLocalizations.of(context)!.roleChefEquipe;
     }
   }
 
@@ -81,7 +82,7 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Gestion Matériel'),
+        title: Text(AppLocalizations.of(context)!.appTitle),
         backgroundColor: const Color(0xFF1B5E20),
         foregroundColor: Colors.white,
         actions: [
@@ -115,13 +116,13 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
               ),
               const PopupMenuDivider(),
-              const PopupMenuItem(
+              PopupMenuItem(
                 value: 'deconnexion',
                 child: Row(
                   children: [
                     Icon(Icons.logout, color: Colors.red),
                     SizedBox(width: 8),
-                    Text('Déconnexion'),
+                    Text(AppLocalizations.of(context)!.logout),
                   ],
                 ),
               ),
@@ -155,26 +156,26 @@ class _HomeScreenState extends State<HomeScreen> {
         backgroundColor: Colors.white,
         selectedItemColor: const Color(0xFF1B5E20),
         unselectedItemColor: Colors.grey,
-        items: const [
+        items: [
           BottomNavigationBarItem(
-            icon: Icon(Icons.dashboard),
-            label: 'Dashboard',
+            icon: const Icon(Icons.dashboard),
+            label: AppLocalizations.of(context)!.navDashboard,
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.qr_code_scanner),
-            label: 'Scanner',
+            icon: const Icon(Icons.qr_code_scanner),
+            label: AppLocalizations.of(context)!.navScanner,
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.inventory_2),
-            label: 'Matériels',
+            icon: const Icon(Icons.inventory_2),
+            label: AppLocalizations.of(context)!.equipment,
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.history),
-            label: 'Historique',
+            icon: const Icon(Icons.history),
+            label: AppLocalizations.of(context)!.navHistory,
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.file_download),
-            label: 'Exporter',
+            icon: const Icon(Icons.file_download),
+            label: AppLocalizations.of(context)!.navExport,
           ),
         ],
       ),
