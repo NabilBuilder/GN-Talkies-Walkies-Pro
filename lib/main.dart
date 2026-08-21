@@ -1,89 +1,79 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:firebase_core/firebase_core.dart';
-import 'package:firebase_app_check/firebase_app_check.dart';
-import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'firebase_options.dart';
+import 'platform_helper.dart';
 import 'di/service_locator.dart';
 import 'l10n/app_localizations.dart';
 import 'screens/splash_screen.dart';
 import 'services/auth_service.dart';
 import 'services/locale_service.dart';
 import 'services/theme_service.dart';
-import 'services/sync_service.dart';
 import 'theme/app_theme.dart';
 
 // Création & Développement : Boukhoulkhal Nabil (2026)
 
+// Conditional imports for Firebase (only available on mobile)
+import 'package:firebase_core/firebase_core.dart' if (dart.library.html) '';
+import 'package:firebase_app_check/firebase_app_check.dart'
+    if (dart.library.html) '';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart'
+    if (dart.library.html) '';
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // Initialize Firebase with error handling
-  try {
-    await Firebase.initializeApp(
-      options: DefaultFirebaseOptions.currentPlatform,
-    );
-  } catch (e) {
-    debugPrint('Firebase initialization failed: $e');
+  // Skip Firebase on desktop platforms (not supported)
+  if (!isDesktop) {
+    // Initialize Firebase with error handling
+    try {
+      await Firebase.initializeApp(
+        options: DefaultFirebaseOptions.currentPlatform,
+      );
+    } catch (e) {
+      debugPrint('Firebase initialization failed: $e');
+    }
+
+    // Initialize Firebase App Check
+    try {
+      await FirebaseAppCheck.instance.activate(
+        providerAndroid: const AndroidDebugProvider(),
+        providerApple: const AppleDebugProvider(),
+      );
+      debugPrint('Firebase App Check initialized');
+    } catch (e) {
+      debugPrint('App Check initialization failed: $e');
+    }
+
+    // Initialize Firebase Crashlytics
+    try {
+      FlutterError.onError = FirebaseCrashlytics.instance.recordFlutterError;
+    } catch (e) {
+      debugPrint('Crashlytics initialization failed: $e');
+    }
   }
 
-  // Initialize Firebase App Check
+  // Initialize Hive local storage for offline caching (mobile only)
   try {
-    await FirebaseAppCheck.instance.activate(
-      providerAndroid: const AndroidDebugProvider(),
-      providerApple: const AppleDebugProvider(),
-    );
-    debugPrint('Firebase App Check initialized');
-  } catch (e) {
-    debugPrint('App Check initialization failed: $e');
-  }
-
-  // Initialize Firebase Crashlytics
-  try {
-    FlutterError.onError = FirebaseCrashlytics.instance.recordFlutterError;
-  } catch (e) {
-    debugPrint('Crashlytics initialization failed: $e');
-  }
-
-  // Initialize Hive local storage for offline caching
-  try {
-    final localStorage = await initLocalStorage();
-    await setupServiceLocator(localStorage: localStorage);
+    if (!isDesktop) {
+      final localStorage = await initLocalStorage();
+      await setupServiceLocator(localStorage: localStorage);
+    } else {
+      await setupServiceLocator();
+    }
   } catch (e) {
     debugPrint('Service locator initialization failed: $e');
-    // Fallback: setup without local storage
     await setupServiceLocator();
   }
 
-  // Create demo account if needed
-  try {
-    final authService = AuthService();
-    await authService.createDemoAccountIfNeeded();
-  } catch (e) {
-    debugPrint('Demo account creation failed: $e');
-  }
-
-  // Initial sync to cache data for offline use
-  try {
-    await getIt<ISyncService>().syncAll();
-  } catch (e) {
-    // App continues with cached data if offline
-    debugPrint('Initial sync failed (offline mode): $e');
+  // Skip demo account creation on desktop
+  if (!isDesktop) {
     try {
-      await FirebaseCrashlytics.instance.recordError(
-        e,
-        null,
-        reason: 'Initial sync failed',
-      );
-    } catch (_) {}
-  }
-
-  // Initialize demo data if collections are empty
-  try {
-    await getIt<ISyncService>().initializeDemoDataIfNeeded();
-  } catch (e) {
-    debugPrint('Demo data initialization failed: $e');
+      final authService = AuthService();
+      await authService.createDemoAccountIfNeeded();
+    } catch (e) {
+      debugPrint('Demo account creation failed: $e');
+    }
   }
 
   // Run app with error handling
@@ -92,9 +82,6 @@ void main() async {
       runApp(const GestionMaterielApp());
     },
     (error, stackTrace) {
-      try {
-        FirebaseCrashlytics.instance.recordError(error, stackTrace);
-      } catch (_) {}
       debugPrint('Zone error: $error');
     },
   );

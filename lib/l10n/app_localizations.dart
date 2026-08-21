@@ -773,7 +773,7 @@ abstract class AppLocalizations {
   /// No description provided for @appName.
   ///
   /// In fr, this message translates to:
-  /// **'Gestion de Matériel'**
+  /// **'GN Talkies-Walkies Pro'**
   String get appName;
 
   /// No description provided for @welcomeMessage.

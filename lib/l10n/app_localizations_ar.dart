@@ -346,7 +346,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get loading => 'جاري التحميل...';
 
   @override
-  String get appName => 'إدارة المواد';
+  String get appName => 'GN Talkies-Walkies Pro';
 
   @override
   String get welcomeMessage => 'مرحباً بك في التطبيق';

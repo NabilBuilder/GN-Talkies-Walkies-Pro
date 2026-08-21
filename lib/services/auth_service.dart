@@ -1,7 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/foundation.dart';
 import '../models/utilisateur.dart';
+import '../platform_helper.dart';
 import '../repositories/firestore_utilisateur_repository.dart';
 import '../repositories/i_utilisateur_repository.dart';
 
@@ -11,15 +11,41 @@ class AuthService {
   AuthService({IUtilisateurRepository? repository})
       : _repository = repository ?? FirestoreUtilisateurRepository();
 
-  final FirebaseAuth _auth = FirebaseAuth.instance;
+  // Desktop mode: fake user for demo
+  Utilisateur? _desktopUser;
+
+  User? get currentUser {
+    if (isDesktop) {
+      return _desktopUser != null ? _FakeUser(_desktopUser!) : null;
+    }
+    return FirebaseAuth.instance.currentUser;
+  }
+
+  Stream<User?> get authStateChanges {
+    if (isDesktop) {
+      return Stream.value(currentUser);
+    }
+    return FirebaseAuth.instance.authStateChanges();
+  }
+
   final IUtilisateurRepository _repository;
 
-  User? get currentUser => _auth.currentUser;
-  Stream<User?> get authStateChanges => _auth.authStateChanges();
-
   Future<Utilisateur?> connexion(String email, String password) async {
+    if (isDesktop) {
+      // Desktop mode: create fake user
+      _desktopUser = Utilisateur(
+        id: 'desktop-user-1',
+        nom: 'Utilisateur Desktop',
+        email: email,
+        role: RoleUtilisateur.superviseur,
+        dateCreation: DateTime.now(),
+      );
+      return _desktopUser;
+    }
+
     try {
-      final credential = await _auth.signInWithEmailAndPassword(
+      final credential =
+          await FirebaseAuth.instance.signInWithEmailAndPassword(
         email: email,
         password: password,
       );
@@ -29,12 +55,7 @@ class AuthService {
         return utilisateur;
       }
       return null;
-    } on FirebaseAuthException catch (e, stackTrace) {
-      await FirebaseCrashlytics.instance.recordError(
-        e,
-        stackTrace,
-        reason: 'Login failed: ${e.code}',
-      );
+    } on FirebaseAuthException catch (e) {
       throw AuthServiceException(
         code: e.code,
         message: _getLoginErrorMessage(e.code),
@@ -43,7 +64,11 @@ class AuthService {
   }
 
   Future<void> deconnexion() async {
-    await _auth.signOut();
+    if (isDesktop) {
+      _desktopUser = null;
+      return;
+    }
+    await FirebaseAuth.instance.signOut();
   }
 
   Future<Utilisateur?> inscription({
@@ -52,11 +77,23 @@ class AuthService {
     required String password,
     required RoleUtilisateur role,
   }) async {
+    if (isDesktop) {
+      // Desktop mode: create fake user
+      _desktopUser = Utilisateur(
+        id: 'desktop-user-${DateTime.now().millisecondsSinceEpoch}',
+        nom: nom,
+        email: email,
+        role: role,
+        dateCreation: DateTime.now(),
+      );
+      return _desktopUser;
+    }
+
     UserCredential? credential;
 
     try {
       // Step 1: Create user in Firebase Auth
-      credential = await _auth.createUserWithEmailAndPassword(
+      credential = await FirebaseAuth.instance.createUserWithEmailAndPassword(
         email: email,
         password: password,
       );
@@ -76,29 +113,19 @@ class AuthService {
 
         try {
           await _repository.create(utilisateur);
-        } on FirebaseException catch (e, stackTrace) {
-          // Firestore write failed — clean up Auth user to avoid orphan
-          await credential.user!.delete().catchError((_) {});
-          await FirebaseCrashlytics.instance.recordError(
-            e,
-            stackTrace,
-            reason: 'Firestore profile creation failed: ${e.code}',
-          );
-          throw AuthServiceException(
-            code: 'firestore-write-failed',
-            message: _getFirestoreErrorMessage(e.code),
-          );
-        }
+    } on FirebaseException catch (e) {
+      // Firestore write failed — clean up Auth user to avoid orphan
+      await credential.user!.delete().catchError((_) {});
+      throw AuthServiceException(
+        code: 'firestore-write-failed',
+        message: _getFirestoreErrorMessage(e.code),
+      );
+    }
 
         return utilisateur;
       }
       return null;
-    } on FirebaseAuthException catch (e, stackTrace) {
-      await FirebaseCrashlytics.instance.recordError(
-        e,
-        stackTrace,
-        reason: 'Registration auth failed: ${e.code}',
-      );
+    } on FirebaseAuthException catch (e) {
       throw AuthServiceException(
         code: e.code,
         message: _getRegistrationErrorMessage(e.code),
@@ -107,12 +134,14 @@ class AuthService {
   }
 
   Future<Utilisateur?> getUtilisateurActuel() async {
+    if (isDesktop) {
+      return _desktopUser;
+    }
     if (currentUser == null) return null;
     return _repository.getById(currentUser!.uid);
   }
 
   /// Creates a demo account if it doesn't exist yet.
-  /// This allows users to quickly test the app without manual registration.
   Future<void> createDemoAccountIfNeeded() async {
     const demoEmail = 'nabil.gardnet@gmail.com';
     const demoPassword = 'Othm@ne2015';
@@ -120,18 +149,15 @@ class AuthService {
     const demoRole = RoleUtilisateur.superviseur;
 
     try {
-      // Try to create the demo account
-      // If email already exists, Firebase will throw 'email-already-in-use'
-      final credential = await _auth.createUserWithEmailAndPassword(
+      final credential =
+          await FirebaseAuth.instance.createUserWithEmailAndPassword(
         email: demoEmail,
         password: demoPassword,
       );
 
       if (credential.user != null) {
-        // Update display name
         await credential.user!.updateDisplayName(demoName);
 
-        // Create Firestore profile
         final demoUser = Utilisateur(
           id: credential.user!.uid,
           nom: demoName,
@@ -144,14 +170,12 @@ class AuthService {
         debugPrint('Demo account created successfully');
       }
     } on FirebaseAuthException catch (e) {
-      // If email already in use, that's fine - demo account exists
       if (e.code == 'email-already-in-use') {
         debugPrint('Demo account email already registered');
       } else {
         debugPrint('Failed to create demo account: ${e.code}');
       }
     } catch (e) {
-      // Any other error - log but don't crash
       debugPrint('Demo account creation skipped: $e');
     }
   }
@@ -174,11 +198,11 @@ class AuthService {
   String _getFirestoreErrorMessage(String code) {
     switch (code) {
       case 'permission-denied':
-        return 'Erreur de permissions Firestore. Vérifiez les règles de sécurité.';
+        return 'Erreur de permissions Firestore.';
       case 'unavailable':
         return 'Firestore est temporairement indisponible.';
       case 'deadline-exceeded':
-        return 'Délai d\'attente dépassé. Vérifiez votre connexion.';
+        return 'Délai d\'attente dépassé.';
       default:
         return 'Erreur Firestore: $code';
     }
@@ -204,6 +228,52 @@ class AuthService {
         return 'Erreur de connexion: $code';
     }
   }
+}
+
+/// Fake User class for desktop mode
+class _FakeUser implements User {
+  final Utilisateur _utilisateur;
+
+  _FakeUser(this._utilisateur);
+
+  @override
+  String get uid => _utilisateur.id;
+
+  @override
+  String? get email => _utilisateur.email;
+
+  @override
+  String? get displayName => _utilisateur.nom;
+
+  @override
+  bool get emailVerified => true;
+
+  @override
+  bool get isAnonymous => false;
+
+  @override
+  Future<void> updateDisplayName(String? displayName) async {}
+
+  @override
+  Future<void> reload() async {}
+
+  @override
+  Future<UserCredential> linkWithCredential(AuthCredential credential) =>
+      throw UnimplementedError();
+
+  @override
+  Future<UserCredential> reauthenticateWithCredential(
+          AuthCredential credential) =>
+      throw UnimplementedError();
+
+  @override
+  Future<void> delete() async {}
+
+  @override
+  String? get phoneNumber => null;
+
+  @override
+  dynamic noSuchMethod(Invocation invocation) => null;
 }
 
 /// Typed exception for AuthService with user-friendly messages.

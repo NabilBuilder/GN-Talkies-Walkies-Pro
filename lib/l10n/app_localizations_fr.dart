@@ -347,7 +347,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get loading => 'Chargement...';
 
   @override
-  String get appName => 'Gestion de Matériel';
+  String get appName => 'GN Talkies-Walkies Pro';
 
   @override
   String get welcomeMessage => 'Bienvenue sur l\'application';

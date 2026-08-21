@@ -4,11 +4,15 @@ import 'package:firebase_core_platform_interface/test.dart' as fcp_test;
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:gestion_materiel/di/service_locator.dart';
+import 'package:gestion_materiel/platform_helper.dart';
 import 'package:gestion_materiel/repositories/firestore_historique_transfert_repository.dart';
 import 'package:gestion_materiel/repositories/firestore_marche_repository.dart';
 import 'package:gestion_materiel/repositories/firestore_materiel_repository.dart';
 import 'package:gestion_materiel/repositories/firestore_site_repository.dart';
 import 'package:gestion_materiel/repositories/firestore_utilisateur_repository.dart';
+import 'package:gestion_materiel/repositories/inmemory_materiel_repository.dart';
+import 'package:gestion_materiel/repositories/inmemory_site_repository.dart';
+import 'package:gestion_materiel/repositories/inmemory_marche_repository.dart';
 import 'package:gestion_materiel/repositories/i_historique_transfert_repository.dart';
 import 'package:gestion_materiel/repositories/i_marche_repository.dart';
 import 'package:gestion_materiel/repositories/i_materiel_repository.dart';
@@ -42,32 +46,53 @@ void main() {
     await resetServiceLocator();
   });
 
-  test('IMaterielRepository resolves to FirestoreMaterielRepository', () {
+  // Platform-aware tests
+  test('IMaterielRepository resolves correctly for current platform', () {
     final repo = getIt<IMaterielRepository>();
-    expect(repo, isA<FirestoreMaterielRepository>());
+    if (isDesktop) {
+      expect(repo, isA<InMemoryMaterielRepository>());
+    } else {
+      expect(repo, isA<FirestoreMaterielRepository>());
+    }
   });
 
-  test('ISiteRepository resolves to FirestoreSiteRepository', () {
+  test('ISiteRepository resolves correctly for current platform', () {
     final repo = getIt<ISiteRepository>();
-    expect(repo, isA<FirestoreSiteRepository>());
+    if (isDesktop) {
+      expect(repo, isA<InMemorySiteRepository>());
+    } else {
+      expect(repo, isA<FirestoreSiteRepository>());
+    }
   });
 
-  test('IMarcheRepository resolves to FirestoreMarcheRepository', () {
+  test('IMarcheRepository resolves correctly for current platform', () {
     final repo = getIt<IMarcheRepository>();
-    expect(repo, isA<FirestoreMarcheRepository>());
+    if (isDesktop) {
+      expect(repo, isA<InMemoryMarcheRepository>());
+    } else {
+      expect(repo, isA<FirestoreMarcheRepository>());
+    }
   });
 
-  test(
-      'IHistoriqueTransfertRepository resolves to FirestoreHistoriqueTransfertRepository',
+  test('IHistoriqueTransfertRepository resolves correctly for current platform',
       () {
     final repo = getIt<IHistoriqueTransfertRepository>();
-    expect(repo, isA<FirestoreHistoriqueTransfertRepository>());
+    if (isDesktop) {
+      // InMemory implementation is anonymous, just check it's not null
+      expect(repo, isNotNull);
+    } else {
+      expect(repo, isA<FirestoreHistoriqueTransfertRepository>());
+    }
   });
 
-  test('IUtilisateurRepository resolves to FirestoreUtilisateurRepository',
-      () {
+  test('IUtilisateurRepository resolves correctly for current platform', () {
     final repo = getIt<IUtilisateurRepository>();
-    expect(repo, isA<FirestoreUtilisateurRepository>());
+    if (isDesktop) {
+      // InMemory implementation is anonymous, just check it's not null
+      expect(repo, isNotNull);
+    } else {
+      expect(repo, isA<FirestoreUtilisateurRepository>());
+    }
   });
 
   test('Singleton: same instance returned on repeated lookups', () {
