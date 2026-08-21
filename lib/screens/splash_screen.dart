@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+import '../services/auth_service.dart';
 import '../theme/app_theme.dart';
 import 'login_screen.dart';
 
@@ -53,8 +53,10 @@ class _SplashScreenState extends State<SplashScreen>
 
       if (!mounted || _navigated) return;
 
-      final user = FirebaseAuth.instance.currentUser;
-      debugPrint('Splash: Firebase check done, user=${user?.uid}');
+      // Use AuthService instead of direct Firebase access
+      final authService = AuthService();
+      final user = authService.currentUser;
+      debugPrint('Splash: auth check done, user=${user?.uid}');
 
       // Always go to LoginScreen - it handles auth state internally
       debugPrint('Splash: navigating to login screen');

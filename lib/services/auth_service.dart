@@ -1,15 +1,15 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
+import '../di/service_locator.dart';
 import '../models/utilisateur.dart';
 import '../platform_helper.dart';
-import '../repositories/firestore_utilisateur_repository.dart';
 import '../repositories/i_utilisateur_repository.dart';
 
 // Création & Développement : Boukhoulkhal Nabil (2026)
 
 class AuthService {
   AuthService({IUtilisateurRepository? repository})
-      : _repository = repository ?? FirestoreUtilisateurRepository();
+      : _repository = repository ?? getIt<IUtilisateurRepository>();
 
   // Desktop mode: fake user for demo
   Utilisateur? _desktopUser;
