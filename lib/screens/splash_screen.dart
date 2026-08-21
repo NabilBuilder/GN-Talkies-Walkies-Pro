@@ -2,12 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import '../theme/app_theme.dart';
 import 'login_screen.dart';
-import 'home_screen.dart';
-import '../di/service_locator.dart';
-import '../repositories/i_utilisateur_repository.dart';
 
 /// Splash screen shown on app startup.
-/// Shows logo for 2 seconds, then navigates based on auth state.
+/// Shows logo, then navigates based on auth state.
+/// Includes a 5-second hard timeout to prevent getting stuck.
 /// Création & Développement : Boukhoulkhal Nabil (2026)
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -20,10 +18,13 @@ class _SplashScreenState extends State<SplashScreen>
     with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<double> _fadeAnimation;
+  bool _navigated = false;
 
   @override
   void initState() {
     super.initState();
+    debugPrint('Splash: starting...');
+
     _controller = AnimationController(
       duration: const Duration(milliseconds: 1000),
       vsync: this,
@@ -33,38 +34,42 @@ class _SplashScreenState extends State<SplashScreen>
     );
     _controller.forward();
 
-    // Navigate after 2 seconds
-    Future.delayed(const Duration(seconds: 2), () {
-      if (mounted) {
-        _navigateToNext();
-      }
-    });
+    _initializeApp();
   }
 
-  void _navigateToNext() async {
-    final user = FirebaseAuth.instance.currentUser;
-
-    if (user != null && mounted) {
-      // User is logged in, fetch their profile and go to home
-      try {
-        final repository = getIt<IUtilisateurRepository>();
-        final utilisateur = await repository.getById(user.uid);
-        if (mounted && utilisateur != null) {
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(
-              builder: (context) => HomeScreen(utilisateur: utilisateur),
-            ),
-          );
-        } else {
-          _goToLogin();
-        }
-      } catch (e) {
+  Future<void> _initializeApp() async {
+    // Hard timeout - force navigate after 5 seconds no matter what
+    final timeout = Future.delayed(const Duration(seconds: 5), () {
+      if (mounted && !_navigated) {
+        debugPrint('Splash: timeout reached, forcing navigation to login');
+        _navigated = true;
         _goToLogin();
       }
-    } else {
+    });
+
+    try {
+      // Wait a minimum of 2 seconds for splash animation
+      await Future.delayed(const Duration(seconds: 2));
+
+      if (!mounted || _navigated) return;
+
+      final user = FirebaseAuth.instance.currentUser;
+      debugPrint('Splash: Firebase check done, user=${user?.uid}');
+
+      // Always go to LoginScreen - it handles auth state internally
+      debugPrint('Splash: navigating to login screen');
+      _navigated = true;
       _goToLogin();
+    } catch (e) {
+      debugPrint('Splash: error during init: $e');
+      if (mounted && !_navigated) {
+        _navigated = true;
+        _goToLogin();
+      }
     }
+
+    // Cancel timeout if navigation already happened
+    timeout.ignore();
   }
 
   void _goToLogin() {
