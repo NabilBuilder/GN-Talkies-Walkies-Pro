@@ -1,4 +1,3 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import '../di/service_locator.dart';
 import '../models/utilisateur.dart';
@@ -7,6 +6,9 @@ import '../repositories/i_utilisateur_repository.dart';
 
 // Création & Développement : Boukhoulkhal Nabil (2026)
 
+/// Firebase Auth import — deferred, loaded only on mobile.
+import 'package:firebase_auth/firebase_auth.dart' deferred as fb_auth;
+
 class AuthService {
   AuthService({IUtilisateurRepository? repository})
       : _repository = repository ?? getIt<IUtilisateurRepository>();
@@ -14,18 +16,70 @@ class AuthService {
   // Desktop mode: fake user for demo
   Utilisateur? _desktopUser;
 
-  User? get currentUser {
+  // Firebase auth — use dynamic to avoid deferred type issues in declarations.
+  dynamic _firebaseAuth;
+  bool _authLibraryLoaded = false;
+
+  /// Lazily loads firebase_auth library and gets the instance.
+  Future<dynamic> _getFirebaseAuth() async {
+    if (_firebaseAuth == null) {
+      if (!_authLibraryLoaded) {
+        try {
+          await fb_auth.loadLibrary();
+          _authLibraryLoaded = true;
+        } catch (e) {
+          debugPrint('Failed to load firebase_auth library: $e');
+          return null;
+        }
+      }
+      try {
+        _firebaseAuth = fb_auth.FirebaseAuth.instance;
+      } catch (e) {
+        debugPrint('Failed to get FirebaseAuth instance: $e');
+        return null;
+      }
+    }
+    return _firebaseAuth;
+  }
+
+  dynamic get currentUser {
     if (isDesktop) {
       return _desktopUser != null ? _FakeUser(_desktopUser!) : null;
     }
-    return FirebaseAuth.instance.currentUser;
+    // On mobile, this must be called asynchronously
+    return null;
   }
 
-  Stream<User?> get authStateChanges {
+  Future<dynamic> getCurrentUserAsync() async {
     if (isDesktop) {
-      return Stream.value(currentUser);
+      return _desktopUser != null ? _FakeUser(_desktopUser!) : null;
     }
-    return FirebaseAuth.instance.authStateChanges();
+    try {
+      final auth = await _getFirebaseAuth();
+      if (auth == null) return null;
+      return auth.currentUser;
+    } catch (e) {
+      debugPrint('Failed to get current user: $e');
+      return null;
+    }
+  }
+
+  Stream<dynamic> get authStateChanges async* {
+    if (isDesktop) {
+      yield currentUser;
+      return;
+    }
+    try {
+      final auth = await _getFirebaseAuth();
+      if (auth == null) {
+        yield null;
+        return;
+      }
+      yield* auth.authStateChanges();
+    } catch (e) {
+      debugPrint('Auth state changes error: $e');
+      yield null;
+    }
   }
 
   final IUtilisateurRepository _repository;
@@ -44,8 +98,14 @@ class AuthService {
     }
 
     try {
-      final credential =
-          await FirebaseAuth.instance.signInWithEmailAndPassword(
+      final auth = await _getFirebaseAuth();
+      if (auth == null) {
+        throw AuthServiceException(
+          code: 'firebase-unavailable',
+          message: 'Firebase is not available.',
+        );
+      }
+      final credential = await auth.signInWithEmailAndPassword(
         email: email,
         password: password,
       );
@@ -55,11 +115,16 @@ class AuthService {
         return utilisateur;
       }
       return null;
-    } on FirebaseAuthException catch (e) {
-      throw AuthServiceException(
-        code: e.code,
-        message: _getLoginErrorMessage(e.code),
-      );
+    } catch (e) {
+      // Catch Firebase errors and translate to user-friendly messages
+      final code = _extractFirebaseErrorCode(e);
+      if (code != null) {
+        throw AuthServiceException(
+          code: code,
+          message: _getLoginErrorMessage(code),
+        );
+      }
+      rethrow;
     }
   }
 
@@ -68,7 +133,14 @@ class AuthService {
       _desktopUser = null;
       return;
     }
-    await FirebaseAuth.instance.signOut();
+    try {
+      final auth = await _getFirebaseAuth();
+      if (auth != null) {
+        await auth.signOut();
+      }
+    } catch (e) {
+      debugPrint('Sign out error: $e');
+    }
   }
 
   Future<Utilisateur?> inscription({
@@ -89,11 +161,18 @@ class AuthService {
       return _desktopUser;
     }
 
-    UserCredential? credential;
+    dynamic credential;
 
     try {
+      final auth = await _getFirebaseAuth();
+      if (auth == null) {
+        throw AuthServiceException(
+          code: 'firebase-unavailable',
+          message: 'Firebase is not available.',
+        );
+      }
       // Step 1: Create user in Firebase Auth
-      credential = await FirebaseAuth.instance.createUserWithEmailAndPassword(
+      credential = await auth.createUserWithEmailAndPassword(
         email: email,
         password: password,
       );
@@ -113,23 +192,28 @@ class AuthService {
 
         try {
           await _repository.create(utilisateur);
-    } on FirebaseException catch (e) {
-      // Firestore write failed — clean up Auth user to avoid orphan
-      await credential.user!.delete().catchError((_) {});
-      throw AuthServiceException(
-        code: 'firestore-write-failed',
-        message: _getFirestoreErrorMessage(e.code),
-      );
-    }
+        } catch (e) {
+          // Firestore write failed — clean up Auth user to avoid orphan
+          await credential.user!.delete().catchError((_) {});
+          throw AuthServiceException(
+            code: 'firestore-write-failed',
+            message: 'Erreur lors de la création du profil utilisateur.',
+          );
+        }
 
         return utilisateur;
       }
       return null;
-    } on FirebaseAuthException catch (e) {
-      throw AuthServiceException(
-        code: e.code,
-        message: _getRegistrationErrorMessage(e.code),
-      );
+    } catch (e) {
+      // Catch Firebase errors and translate to user-friendly messages
+      final code = _extractFirebaseErrorCode(e);
+      if (code != null) {
+        throw AuthServiceException(
+          code: code,
+          message: _getRegistrationErrorMessage(code),
+        );
+      }
+      rethrow;
     }
   }
 
@@ -137,20 +221,24 @@ class AuthService {
     if (isDesktop) {
       return _desktopUser;
     }
-    if (currentUser == null) return null;
-    return _repository.getById(currentUser!.uid);
+    final user = await getCurrentUserAsync();
+    if (user == null) return null;
+    return _repository.getById(user.uid);
   }
 
   /// Creates a demo account if it doesn't exist yet.
   Future<void> createDemoAccountIfNeeded() async {
+    if (isDesktop) return; // Skip on desktop
+
     const demoEmail = 'nabil.gardnet@gmail.com';
     const demoPassword = 'Othm@ne2015';
     const demoName = 'boukhoulkhal nabil';
     const demoRole = RoleUtilisateur.superviseur;
 
     try {
-      final credential =
-          await FirebaseAuth.instance.createUserWithEmailAndPassword(
+      final auth = await _getFirebaseAuth();
+      if (auth == null) return;
+      final credential = await auth.createUserWithEmailAndPassword(
         email: demoEmail,
         password: demoPassword,
       );
@@ -169,15 +257,24 @@ class AuthService {
         await _repository.create(demoUser);
         debugPrint('Demo account created successfully');
       }
-    } on FirebaseAuthException catch (e) {
-      if (e.code == 'email-already-in-use') {
+    } catch (e) {
+      final code = _extractFirebaseErrorCode(e);
+      if (code == 'email-already-in-use') {
         debugPrint('Demo account email already registered');
       } else {
-        debugPrint('Failed to create demo account: ${e.code}');
+        debugPrint('Demo account creation skipped: $code');
       }
-    } catch (e) {
-      debugPrint('Demo account creation skipped: $e');
     }
+  }
+
+  /// Extracts Firebase error code from any exception type.
+  String? _extractFirebaseErrorCode(dynamic error) {
+    try {
+      // Try to access .code property dynamically
+      final code = (error as dynamic).code;
+      if (code is String && code.isNotEmpty) return code;
+    } catch (_) {}
+    return null;
   }
 
   String _getRegistrationErrorMessage(String code) {
@@ -192,19 +289,6 @@ class AuthService {
         return 'Cette méthode de connexion n\'est pas activée.';
       default:
         return 'Erreur d\'inscription: $code';
-    }
-  }
-
-  String _getFirestoreErrorMessage(String code) {
-    switch (code) {
-      case 'permission-denied':
-        return 'Erreur de permissions Firestore.';
-      case 'unavailable':
-        return 'Firestore est temporairement indisponible.';
-      case 'deadline-exceeded':
-        return 'Délai d\'attente dépassé.';
-      default:
-        return 'Erreur Firestore: $code';
     }
   }
 
@@ -231,49 +315,21 @@ class AuthService {
 }
 
 /// Fake User class for desktop mode
-class _FakeUser implements User {
+class _FakeUser {
   final Utilisateur _utilisateur;
 
   _FakeUser(this._utilisateur);
 
-  @override
   String get uid => _utilisateur.id;
-
-  @override
   String? get email => _utilisateur.email;
-
-  @override
   String? get displayName => _utilisateur.nom;
-
-  @override
   bool get emailVerified => true;
-
-  @override
   bool get isAnonymous => false;
 
-  @override
   Future<void> updateDisplayName(String? displayName) async {}
-
-  @override
   Future<void> reload() async {}
-
-  @override
-  Future<UserCredential> linkWithCredential(AuthCredential credential) =>
-      throw UnimplementedError();
-
-  @override
-  Future<UserCredential> reauthenticateWithCredential(
-          AuthCredential credential) =>
-      throw UnimplementedError();
-
-  @override
   Future<void> delete() async {}
-
-  @override
   String? get phoneNumber => null;
-
-  @override
-  dynamic noSuchMethod(Invocation invocation) => null;
 }
 
 /// Typed exception for AuthService with user-friendly messages.

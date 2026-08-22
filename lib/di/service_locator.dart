@@ -1,38 +1,41 @@
+import 'package:flutter/foundation.dart';
 import 'package:get_it/get_it.dart';
-import '../platform_helper.dart';
 
+import '../platform_helper.dart';
 import '../models/utilisateur.dart';
 import '../models/historique_transfert.dart';
-import '../repositories/firestore_historique_transfert_repository.dart';
-import '../repositories/firestore_marche_repository.dart';
-import '../repositories/firestore_materiel_repository.dart';
-import '../repositories/firestore_site_repository.dart';
-import '../repositories/firestore_utilisateur_repository.dart';
-import '../repositories/inmemory_materiel_repository.dart';
-import '../repositories/inmemory_site_repository.dart';
-import '../repositories/inmemory_marche_repository.dart';
 import '../repositories/i_historique_transfert_repository.dart';
 import '../repositories/i_marche_repository.dart';
 import '../repositories/i_materiel_repository.dart';
 import '../repositories/i_site_repository.dart';
 import '../repositories/i_utilisateur_repository.dart';
+import '../repositories/inmemory_materiel_repository.dart';
+import '../repositories/inmemory_site_repository.dart';
+import '../repositories/inmemory_marche_repository.dart';
+import '../services/i_sync_service.dart';
 import '../services/locale_service.dart';
 import '../services/theme_service.dart';
 import '../services/local_storage_service.dart';
-import '../services/sync_service.dart';
+
+// Deferred imports — only loaded on mobile (Firebase not available on desktop)
+import '../repositories/firestore_historique_transfert_repository.dart'
+    deferred as firestore_hist;
+import '../repositories/firestore_marche_repository.dart'
+    deferred as firestore_marche;
+import '../repositories/firestore_materiel_repository.dart'
+    deferred as firestore_materiel;
+import '../repositories/firestore_site_repository.dart'
+    deferred as firestore_site;
+import '../repositories/firestore_utilisateur_repository.dart'
+    deferred as firestore_utilisateur;
+import '../services/sync_service.dart' deferred as firestore_sync;
 
 /// Central service locator for dependency injection.
-///
-/// All repositories are registered as singletons — the same instance is
-/// returned for every lookup. This keeps the code decoupled from concrete
-/// implementations while remaining simple (no generators, no code-gen).
 /// Création & Développement : Boukhoulkhal Nabil (2026)
 final GetIt getIt = GetIt.instance;
 
 /// Initializes Hive local storage. Must be called before [setupServiceLocator]
 /// in production, or skipped / passed a pre-initialized instance in tests.
-///
-/// [path] — optional directory path (used by tests to avoid path_provider).
 Future<ILocalStorageService> initLocalStorage([String? path]) async {
   final localStorage = HiveLocalStorageService();
   await localStorage.init(path);
@@ -41,7 +44,7 @@ Future<ILocalStorageService> initLocalStorage([String? path]) async {
 
 /// Registers every repository interface → implementation.
 ///
-/// On mobile: uses Firestore implementations.
+/// On mobile: uses Firestore implementations (loaded deferred).
 /// On desktop: uses in-memory implementations (Firebase not supported).
 ///
 /// Must be called **once** in [main] before [runApp].
@@ -49,6 +52,8 @@ Future<ILocalStorageService> initLocalStorage([String? path]) async {
 Future<void> setupServiceLocator({
   ILocalStorageService? localStorage,
 }) async {
+  debugPrint('ServiceLocator: Platform isDesktop=$isDesktop');
+
   // Register localStorage first (may be null for tests that don't need it)
   if (localStorage != null) {
     getIt.registerSingleton<ILocalStorageService>(localStorage);
@@ -56,50 +61,65 @@ Future<void> setupServiceLocator({
 
   // Register repositories based on platform
   if (isDesktop) {
+    debugPrint('ServiceLocator: Registering InMemory repositories for desktop');
     // Desktop: Use in-memory repositories (Firebase not available)
-    final inMemoryMaterielRepo = InMemoryMaterielRepository();
-    final inMemorySiteRepo = InMemorySiteRepository();
-    final inMemoryMarcheRepo = InMemoryMarcheRepository();
-
     getIt
       ..registerLazySingleton<IMaterielRepository>(
-        () => inMemoryMaterielRepo,
+        () => InMemoryMaterielRepository(),
       )
       ..registerLazySingleton<ISiteRepository>(
-        () => inMemorySiteRepo,
+        () => InMemorySiteRepository(),
       )
       ..registerLazySingleton<IMarcheRepository>(
-        () => inMemoryMarcheRepo,
+        () => InMemoryMarcheRepository(),
       )
       ..registerLazySingleton<IHistoriqueTransfertRepository>(
         () => InMemoryHistoriqueTransfertRepository(),
       )
       ..registerLazySingleton<IUtilisateurRepository>(
         () => InMemoryUtilisateurRepository(),
+      )
+      ..registerLazySingleton<ISyncService>(
+        () => InMemorySyncService(),
       );
   } else {
-    // Mobile: Use Firestore repositories
+    debugPrint('ServiceLocator: Loading Firestore repositories for mobile');
+    // Mobile: Load deferred Firestore implementations
+    await Future.wait([
+      firestore_hist.loadLibrary(),
+      firestore_marche.loadLibrary(),
+      firestore_materiel.loadLibrary(),
+      firestore_site.loadLibrary(),
+      firestore_utilisateur.loadLibrary(),
+      firestore_sync.loadLibrary(),
+    ]);
+
     getIt
       ..registerLazySingleton<IMaterielRepository>(
-        () => FirestoreMaterielRepository(
+        () => firestore_materiel.FirestoreMaterielRepository(
           localStorage: localStorage,
         ),
       )
       ..registerLazySingleton<ISiteRepository>(
-        () => FirestoreSiteRepository(
+        () => firestore_site.FirestoreSiteRepository(
           localStorage: localStorage,
         ),
       )
       ..registerLazySingleton<IMarcheRepository>(
-        () => FirestoreMarcheRepository(
+        () => firestore_marche.FirestoreMarcheRepository(
           localStorage: localStorage,
         ),
       )
       ..registerLazySingleton<IHistoriqueTransfertRepository>(
-        () => FirestoreHistoriqueTransfertRepository(),
+        () => firestore_hist.FirestoreHistoriqueTransfertRepository(),
       )
       ..registerLazySingleton<IUtilisateurRepository>(
-        () => FirestoreUtilisateurRepository(),
+        () => firestore_utilisateur.FirestoreUtilisateurRepository(),
+      )
+      ..registerLazySingleton<ISyncService>(
+        () => firestore_sync.FirestoreSyncService(
+          localStorage: localStorage ?? _NullLocalStorage(),
+        ),
       );
   }
 
@@ -110,13 +130,6 @@ Future<void> setupServiceLocator({
     )
     ..registerLazySingleton<IThemeService>(
       () => ThemeService(),
-    )
-    ..registerLazySingleton<ISyncService>(
-      () => isDesktop
-          ? InMemorySyncService()
-          : FirestoreSyncService(
-              localStorage: localStorage ?? _NullLocalStorage(),
-            ),
     );
 
   // Initialize persisted preferences
@@ -149,9 +162,9 @@ class _NullLocalStorage implements ILocalStorageService {
   Future<void> clearCache() async {}
 }
 
-// ============================================================================
+// =============================================================================
 // In-Memory implementations for Desktop
-// ============================================================================
+// =============================================================================
 
 class InMemoryHistoriqueTransfertRepository
     implements IHistoriqueTransfertRepository {
@@ -182,7 +195,9 @@ class InMemorySyncService implements ISyncService {
   @override
   Future<bool> syncAll() async => true;
   @override
-  Future<List<Map<String, dynamic>>> getMateriels({bool forceRefresh = false}) =>
+  Future<List<Map<String, dynamic>>> getMateriels({
+    bool forceRefresh = false,
+  }) =>
       Future.value([]);
   @override
   Future<List<Map<String, dynamic>>> getSites({bool forceRefresh = false}) =>

@@ -1,79 +1,54 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'firebase_options.dart';
 import 'platform_helper.dart';
 import 'di/service_locator.dart';
 import 'l10n/app_localizations.dart';
 import 'screens/splash_screen.dart';
-import 'services/auth_service.dart';
 import 'services/locale_service.dart';
 import 'services/theme_service.dart';
 import 'theme/app_theme.dart';
 
 // Création & Développement : Boukhoulkhal Nabil (2026)
 
-// Conditional imports for Firebase (only available on mobile)
-import 'package:firebase_core/firebase_core.dart' if (dart.library.html) '';
-import 'package:firebase_app_check/firebase_app_check.dart'
-    if (dart.library.html) '';
-import 'package:firebase_crashlytics/firebase_crashlytics.dart'
-    if (dart.library.html) '';
+// Deferred import — ONLY loaded on mobile, never on desktop.
+// This file imports firebase_core, firebase_options, etc.
+import 'firebase_setup.dart' deferred as fb_setup;
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // Skip Firebase on desktop platforms (not supported)
-  if (!isDesktop) {
-    // Initialize Firebase with error handling
-    try {
-      await Firebase.initializeApp(
-        options: DefaultFirebaseOptions.currentPlatform,
-      );
-    } catch (e) {
-      debugPrint('Firebase initialization failed: $e');
-    }
+  // On desktop: suppress all Flutter errors to prevent red screen
+  if (isDesktop) {
+    FlutterError.onError = (FlutterErrorDetails details) {
+      debugPrint('Desktop FlutterError (suppressed): ${details.exception}');
+    };
+    debugPrint('Desktop mode: Firebase will NOT be initialized');
+  }
 
-    // Initialize Firebase App Check
+  // Firebase initialization — ONLY on mobile platforms (deferred loading)
+  if (isMobile) {
     try {
-      await FirebaseAppCheck.instance.activate(
-        providerAndroid: const AndroidDebugProvider(),
-        providerApple: const AppleDebugProvider(),
-      );
-      debugPrint('Firebase App Check initialized');
+      await fb_setup.loadLibrary();
+      await fb_setup.setupFirebase();
     } catch (e) {
-      debugPrint('App Check initialization failed: $e');
-    }
-
-    // Initialize Firebase Crashlytics
-    try {
-      FlutterError.onError = FirebaseCrashlytics.instance.recordFlutterError;
-    } catch (e) {
-      debugPrint('Crashlytics initialization failed: $e');
+      debugPrint('Firebase setup failed: $e');
     }
   }
 
-  // Initialize Hive local storage for offline caching (mobile only)
+  // Initialize local storage and service locator
   try {
-    if (!isDesktop) {
+    if (isMobile) {
       final localStorage = await initLocalStorage();
       await setupServiceLocator(localStorage: localStorage);
     } else {
       await setupServiceLocator();
     }
+    debugPrint(
+        'ServiceLocator initialized for ${isDesktop ? "desktop" : "mobile"}');
   } catch (e) {
     debugPrint('Service locator initialization failed: $e');
     await setupServiceLocator();
-  }
-
-  // Skip demo account creation on desktop
-  if (!isDesktop) {
-    try {
-      final authService = AuthService();
-      await authService.createDemoAccountIfNeeded();
-    } catch (e) {
-      debugPrint('Demo account creation failed: $e');
-    }
   }
 
   // Run app with error handling

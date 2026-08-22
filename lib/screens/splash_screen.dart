@@ -53,10 +53,10 @@ class _SplashScreenState extends State<SplashScreen>
 
       if (!mounted || _navigated) return;
 
-      // Use AuthService instead of direct Firebase access
+      // Use AuthService (no direct Firebase access)
       final authService = AuthService();
-      final user = authService.currentUser;
-      debugPrint('Splash: auth check done, user=${user?.uid}');
+      final user = await authService.getCurrentUserAsync();
+      debugPrint('Splash: auth check done, user=${user?.uid ?? "null"}');
 
       // Always go to LoginScreen - it handles auth state internally
       debugPrint('Splash: navigating to login screen');

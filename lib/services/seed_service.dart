@@ -1,12 +1,33 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
+// Création & Développement : Boukhoulkhal Nabil (2026)
 
+/// Seeds the database with demo data.
+/// On desktop (where Firebase is not available), this is a no-op.
 class SeedService {
-  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  dynamic _firestore;
+  bool _firestoreAvailable = true;
+
+  dynamic _getDb() {
+    if (_firestore == null && _firestoreAvailable) {
+      try {
+        // This will only work on mobile where Firebase is initialized
+        _firestore = _getFirestoreInstance();
+      } catch (e) {
+        _firestoreAvailable = false;
+      }
+    }
+    return _firestore;
+  }
 
   Future<Map<String, int>> seedDatabase() async {
+    final db = _getDb();
+    if (db == null) {
+      // Desktop: return empty results (demo data is provided by InMemory repos)
+      return {'Sites': 0, 'Marches': 0, 'Materiels': 0};
+    }
+
     final result = <String, int>{};
 
-    final batch = _firestore.batch();
+    final batch = db.batch();
     var sitesCount = 0;
     var marchesCount = 0;
     var materielsCount = 0;
@@ -35,13 +56,13 @@ class SeedService {
     final siteNames = <String>[];
 
     for (final site in sites) {
-      final ref = _firestore.collection('Sites').doc();
+      final ref = db.collection('Sites').doc();
       batch.set(ref, {
         'nom': site['nom'],
         'adresse': site['adresse'],
         'ville': site['ville'],
         'responsable': site['responsable'],
-        'dateCreation': Timestamp.fromDate(DateTime.now()),
+        'dateCreation': DateTime.now(),
       });
       siteNames.add(site['nom'] as String);
       sitesCount++;
@@ -71,12 +92,12 @@ class SeedService {
     final marcheNumbers = <String>[];
 
     for (final marche in marches) {
-      final ref = _firestore.collection('Marches').doc();
+      final ref = db.collection('Marches').doc();
       batch.set(ref, {
         'numero': marche['numero'],
         'intitule': marche['intitule'],
         'client': marche['client'],
-        'dateDebut': Timestamp.fromDate(DateTime.now()),
+        'dateDebut': DateTime.now(),
         'dateFin': null,
         'budget': marche['budget'],
       });
@@ -121,7 +142,7 @@ class SeedService {
 
     for (var i = 0; i < materiels.length; i++) {
       final m = materiels[i];
-      final ref = _firestore.collection('Materiels').doc();
+      final ref = db.collection('Materiels').doc();
       batch.set(ref, {
         'codeQR': m['codeQR'],
         'designation': m['designation'],
@@ -132,8 +153,8 @@ class SeedService {
         'siteActuel': siteNames[i % siteNames.length],
         'marche': marcheNumbers[i % marcheNumbers.length],
         'imageUrl': '',
-        'dateEnregistrement': Timestamp.fromDate(DateTime.now()),
-        'derniereMiseAJour': Timestamp.fromDate(DateTime.now()),
+        'dateEnregistrement': DateTime.now(),
+        'derniereMiseAJour': DateTime.now(),
         'enregistrePar': '',
       });
       materielsCount++;
@@ -147,4 +168,9 @@ class SeedService {
 
     return result;
   }
+}
+
+/// Get Firestore instance — only called on mobile where Firebase is initialized.
+dynamic _getFirestoreInstance() {
+  throw StateError('Firebase not available on this platform');
 }
